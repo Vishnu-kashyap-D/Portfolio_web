@@ -60,8 +60,8 @@ export function ProjectsGrid() {
                             <GridItem
                                 area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
                                 icon={<Music className="h-4 w-4" />}
-                                title="Music Genre Classifier"
-                                description="Audio signal processing & spectral analysis model achieving 88.4% accuracy."
+                                title="SongSense"
+                                description="Music Genre Classifier, Audio signal processing & spectral analysis model achieving 88.4% accuracy."
                                 link="https://github.com/Vishnu-kashyap-D/Music_genre1"
                             />
 

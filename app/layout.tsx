@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Vishnu Kashyap D | Portfolio",
-  description: "Portfolio of Vishnu Kashyap D - Full Stack Developer",
+  description: "Portfolio of Vishnu Kashyap D",
 };
 
 export default function RootLayout({
