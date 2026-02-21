@@ -34,7 +34,6 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -194,34 +193,20 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
                             GITHUB CONTRIBUTIONS & ACTIVITY
                         </div>
 
-                        {/* Year Selector Dropdown - Now completely free of overflow constraints */}
-                        <div className="relative z-[100]">
-                            <button
-                                onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-1.5 text-sm font-medium text-white transition-colors cursor-pointer"
+                        {/* Year Selector Dropdown - Native Select for 100% reliability */}
+                        <div className="relative">
+                            <select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                className="appearance-none flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 px-4 py-1.5 pr-8 text-sm font-medium text-black dark:text-white transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-cyan-500/50"
                             >
-                                {selectedYear} <ChevronDown className="w-4 h-4" />
-                            </button>
-
-                            {dropdownOpen && (
-                                <div className="absolute top-full left-0 mt-2 w-32 rounded-lg border border-white/10 bg-neutral-900 shadow-2xl overflow-hidden z-[100]">
-                                    {AVAILABLE_YEARS.map(year => (
-                                        <button
-                                            key={year}
-                                            onClick={() => {
-                                                setSelectedYear(year);
-                                                setDropdownOpen(false);
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-4 py-3 text-sm hover:bg-white/10 transition-colors cursor-pointer",
-                                                selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
-                                            )}
-                                        >
-                                            {year}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+                                {AVAILABLE_YEARS.map(year => (
+                                    <option key={year} value={year} className="bg-white dark:bg-neutral-900 text-black dark:text-neutral-300 font-sans">
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-black/50 dark:text-white/50" />
                         </div>
                     </div>
 
