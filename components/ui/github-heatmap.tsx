@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, Loader2 } from "lucide-react";
+import { ArrowUpRight, Loader2, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
 interface GithubHeatmapProps {
     className?: string;
 }
+
+const AVAILABLE_YEARS = [2025, 2026];
 
 interface ContributionDay {
     date: string;
@@ -31,21 +33,22 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
     const [totalContributions, setTotalContributions] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
                 const response = await fetch('https://github-contributions-api.jogruber.de/v4/Vishnu-kashyap-D');
                 if (!response.ok) throw new Error('Failed to fetch');
 
                 const json: ApiResponse = await response.json();
 
-                // Get last 365 days
-                const oneYearAgo = new Date();
-                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
+                // Get data for selected year
                 const yearData = json.contributions.filter(day => {
-                    return new Date(day.date) >= oneYearAgo;
+                    const contributionYear = new Date(day.date).getFullYear();
+                    return contributionYear === selectedYear;
                 });
 
                 const currentTotal = yearData.reduce((acc, day) => acc + day.count, 0);
@@ -61,7 +64,7 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
         };
 
         fetchData();
-    }, []);
+    }, [selectedYear]);
 
     // Recalculate streaks based on our "enhanced" data
     const calculateStreaks = () => {
@@ -129,10 +132,42 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
             )}
         >
             {/* Header with Title and Stats (Restored) */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-12 gap-8">
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-12 gap-8 relative">
                 <div>
-                    <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 mb-4 tracking-wider">
-                        GITHUB CONTRIBUTIONS & ACTIVITY
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 tracking-wider">
+                            GITHUB CONTRIBUTIONS & ACTIVITY
+                        </div>
+
+                        {/* Year Selector Dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-1 text-xs font-medium text-white transition-colors"
+                            >
+                                {selectedYear} <ChevronDown className="w-3 h-3" />
+                            </button>
+
+                            {dropdownOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-24 rounded-lg border border-white/10 bg-neutral-900 shadow-xl overflow-hidden z-50">
+                                    {AVAILABLE_YEARS.map(year => (
+                                        <button
+                                            key={year}
+                                            onClick={() => {
+                                                setSelectedYear(year);
+                                                setDropdownOpen(false);
+                                            }}
+                                            className={cn(
+                                                "w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors",
+                                                selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
+                                            )}
+                                        >
+                                            {year}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-2">
                         Open Source
@@ -146,7 +181,7 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
                 <div className="flex flex-wrap gap-8 md:gap-12">
                     <div className="flex flex-col">
                         <span className="text-[10px] md:text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">
-                            Last 365 Days
+                            {selectedYear} Total
                         </span>
                         <span className="text-3xl md:text-4xl font-bold text-white leading-none">
                             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : totalContributions}
