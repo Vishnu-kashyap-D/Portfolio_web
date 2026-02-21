@@ -25,7 +25,7 @@ const aboutCards: AboutCardData[] = [
       availability: "Open to opportunities",
       socials: [
         { platform: "LinkedIn", url: "https://linkedin.com/in/vishnu-kashyap-d", icon: <Linkedin className="w-5 h-5" /> },
-        { platform: "GitHub", url: "https://github.com/VishnuKashyapD", icon: <Github className="w-5 h-5" /> },
+        { platform: "GitHub", url: "https://github.com/Vishnu-kashyap-D", icon: <Github className="w-5 h-5" /> },
         { platform: "Instagram", url: "https://instagram.com", icon: <Instagram className="w-5 h-5" /> }, // Placeholder
       ]
     }
@@ -36,7 +36,7 @@ const aboutCards: AboutCardData[] = [
     content: {
       socials: [
         { platform: "LinkedIn", handle: "@vishnu-kashyap-d", url: "https://linkedin.com/in/vishnu-kashyap-d", icon: <Linkedin className="w-6 h-6" /> },
-        { platform: "GitHub", handle: "@VishnuKashyapD", url: "https://github.com/VishnuKashyapD", icon: <Github className="w-6 h-6" /> },
+        { platform: "GitHub", handle: "@Vishnu-kashyap-D", url: "https://github.com/Vishnu-kashyap-D", icon: <Github className="w-6 h-6" /> },
         { platform: "Email", handle: "vishnukashyapd@gmail.com", url: "mailto:vishnukashyapd@gmail.com", icon: <Mail className="w-6 h-6" /> },
         { platform: "Instagram", handle: "@vishnu", url: "https://instagram.com", icon: <Instagram className="w-6 h-6" /> },
       ]
