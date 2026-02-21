@@ -28,12 +28,9 @@ interface ApiResponse {
 
 export function GithubHeatmap({ className }: GithubHeatmapProps) {
     const [data, setData] = useState<ContributionDay[]>([]);
+    const [totalContributions, setTotalContributions] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-
-    // Hardcoded stats to match the screenshot "104 contributions in 2025"
-    const TARGET_YEAR = 2025;
-    const DISPLAY_TOTAL = 104;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,29 +40,17 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
 
                 const json: ApiResponse = await response.json();
 
-                let yearData = json.contributions.filter(day => {
-                    const dayYear = new Date(day.date).getFullYear();
-                    return dayYear === TARGET_YEAR;
+                // Get last 365 days
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+                const yearData = json.contributions.filter(day => {
+                    return new Date(day.date) >= oneYearAgo;
                 });
 
-                // Mocking logic to reach 104 contributions
                 const currentTotal = yearData.reduce((acc, day) => acc + day.count, 0);
-                let missing = DISPLAY_TOTAL - currentTotal;
 
-                if (missing > 0) {
-                    yearData = yearData.map(d => ({ ...d }));
-                    let attempts = 0;
-                    while (missing > 0 && attempts < 1000) {
-                        const randomIndex = Math.floor(Math.random() * yearData.length);
-                        if (yearData[randomIndex].count === 0) {
-                            const add = Math.min(missing, Math.floor(Math.random() * 3) + 1);
-                            yearData[randomIndex].count += add;
-                            yearData[randomIndex].level = Math.min(4, Math.ceil(add / 3));
-                            missing -= add;
-                        }
-                        attempts++;
-                    }
-                }
+                setTotalContributions(currentTotal);
                 setData(yearData);
             } catch (err) {
                 console.error("Error fetching GitHub data:", err);
@@ -161,10 +146,10 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
                 <div className="flex flex-wrap gap-8 md:gap-12">
                     <div className="flex flex-col">
                         <span className="text-[10px] md:text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">
-                            Previous Year
+                            Last 365 Days
                         </span>
                         <span className="text-3xl md:text-4xl font-bold text-white leading-none">
-                            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : DISPLAY_TOTAL}
+                            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : totalContributions}
                         </span>
                         <span className="text-xs text-neutral-500 mt-1">
                             contributions
