@@ -82,7 +82,7 @@ export default function Home() {
                 <a href="#projects" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-medium hover:opacity-90 transition-opacity">
                   View Work
                 </a>
-                <a href="/RESUME.VK.pdf" className="border border-input bg-background hover:bg-muted px-8 py-3 rounded-full font-medium transition-colors">
+                <a href="/resu3.pdf" className="border border-input bg-background hover:bg-muted px-8 py-3 rounded-full font-medium transition-colors">
                   Resume
                 </a>
               </div>
