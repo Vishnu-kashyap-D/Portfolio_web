@@ -185,46 +185,44 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
     }
 
     return (
-        <div
-            className={cn(
-                "w-full p-8 rounded-3xl bg-neutral-900/50 backdrop-blur-sm border border-white/5 relative overflow-hidden",
-                className
-            )}
-        >
-            {/* Header with Title and Stats (Restored) */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-12 gap-8 relative">
+        <div className={cn("w-full relative", className)}>
+            {/* Header with Title, Stats and Dropdown */}
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-8 gap-8 relative z-50">
                 <div>
                     <div className="flex items-center gap-4 mb-4">
-                    </div>
+                        <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 tracking-wider">
+                            GITHUB CONTRIBUTIONS & ACTIVITY
+                        </div>
 
-                    {/* Year Selector Dropdown - Moved up for z-index */}
-                    <div className="relative mb-4 z-50 self-start md:self-auto">
-                        <button
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors cursor-pointer"
-                        >
-                            {selectedYear} <ChevronDown className="w-4 h-4" />
-                        </button>
+                        {/* Year Selector Dropdown - Now completely free of overflow constraints */}
+                        <div className="relative z-[100]">
+                            <button
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-1.5 text-sm font-medium text-white transition-colors cursor-pointer"
+                            >
+                                {selectedYear} <ChevronDown className="w-4 h-4" />
+                            </button>
 
-                        {dropdownOpen && (
-                            <div className="absolute top-full left-0 mt-2 w-32 rounded-lg border border-white/10 bg-neutral-900 shadow-xl overflow-hidden z-[100]">
-                                {AVAILABLE_YEARS.map(year => (
-                                    <button
-                                        key={year}
-                                        onClick={() => {
-                                            setSelectedYear(year);
-                                            setDropdownOpen(false);
-                                        }}
-                                        className={cn(
-                                            "w-full text-left px-4 py-3 text-sm hover:bg-white/10 transition-colors cursor-pointer",
-                                            selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
-                                        )}
-                                    >
-                                        {year}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                            {dropdownOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-32 rounded-lg border border-white/10 bg-neutral-900 shadow-2xl overflow-hidden z-[100]">
+                                    {AVAILABLE_YEARS.map(year => (
+                                        <button
+                                            key={year}
+                                            onClick={() => {
+                                                setSelectedYear(year);
+                                                setDropdownOpen(false);
+                                            }}
+                                            className={cn(
+                                                "w-full text-left px-4 py-3 text-sm hover:bg-white/10 transition-colors cursor-pointer",
+                                                selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
+                                            )}
+                                        >
+                                            {year}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-2">
@@ -271,6 +269,10 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Heatmap Card */}
+            <div className="w-full p-8 rounded-3xl bg-neutral-900/50 backdrop-blur-sm border border-white/5 relative overflow-hidden">
             </div>
 
             <div className="border border-neutral-800 rounded-xl p-4 bg-black/20 overflow-x-auto custom-scrollbar">
