@@ -195,40 +195,38 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-12 gap-8 relative">
                 <div>
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 tracking-wider">
-                            GITHUB CONTRIBUTIONS & ACTIVITY
-                        </div>
-
-                        {/* Year Selector Dropdown */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-1 text-xs font-medium text-white transition-colors"
-                            >
-                                {selectedYear} <ChevronDown className="w-3 h-3" />
-                            </button>
-
-                            {dropdownOpen && (
-                                <div className="absolute top-full left-0 mt-2 w-24 rounded-lg border border-white/10 bg-neutral-900 shadow-xl overflow-hidden z-50">
-                                    {AVAILABLE_YEARS.map(year => (
-                                        <button
-                                            key={year}
-                                            onClick={() => {
-                                                setSelectedYear(year);
-                                                setDropdownOpen(false);
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors",
-                                                selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
-                                            )}
-                                        >
-                                            {year}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
                     </div>
+
+                    {/* Year Selector Dropdown - Moved up for z-index */}
+                    <div className="relative mb-4 z-50 self-start md:self-auto">
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors cursor-pointer"
+                        >
+                            {selectedYear} <ChevronDown className="w-4 h-4" />
+                        </button>
+
+                        {dropdownOpen && (
+                            <div className="absolute top-full left-0 mt-2 w-32 rounded-lg border border-white/10 bg-neutral-900 shadow-xl overflow-hidden z-[100]">
+                                {AVAILABLE_YEARS.map(year => (
+                                    <button
+                                        key={year}
+                                        onClick={() => {
+                                            setSelectedYear(year);
+                                            setDropdownOpen(false);
+                                        }}
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 text-sm hover:bg-white/10 transition-colors cursor-pointer",
+                                            selectedYear === year ? "text-cyan-400 font-medium" : "text-neutral-300"
+                                        )}
+                                    >
+                                        {year}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-2">
                         Open Source
                     </h2>
