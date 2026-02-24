@@ -44,7 +44,12 @@ export function ContactSection() {
 
             setIsSuccess(true);
             setFormData({ name: "", email: "", subject: "", message: "" });
-            alert("Message sent successfully!");
+            // alert("Message sent successfully!"); // Removing the alert since we have a much better UI now
+
+            // Reset success state after 3 seconds
+            setTimeout(() => {
+                setIsSuccess(false);
+            }, 3000);
         } catch (error) {
             console.error("Error submitting form:", error);
             alert("Something went wrong. Please try again.");
@@ -146,10 +151,23 @@ export function ContactSection() {
                                 required
                             />
                         </div>
-                        <Button className="w-full text-lg h-12" type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Sending..." : "Send Message"}
+                        <Button
+                            className={`w-full text-lg h-12 transition-all duration-300 ${isSuccess ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}
+                            type="submit"
+                            disabled={isSubmitting || isSuccess}
+                        >
+                            {isSubmitting ? (
+                                "Sending..."
+                            ) : isSuccess ? (
+                                <span className="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
+                                    Sent Successfully
+                                </span>
+                            ) : (
+                                "Send Message"
+                            )}
                         </Button>
-                        {isSuccess && <p className="text-green-500 text-center text-base">Message received! I'll get back to you soon.</p>}
+                        {isSuccess && <p className="text-green-500 text-center text-base animate-in fade-in duration-300">Message received! I'll get back to you soon.</p>}
                     </form>
                 </ContactCard>
             </div>
