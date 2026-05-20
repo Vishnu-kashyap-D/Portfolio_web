@@ -82,7 +82,7 @@ export default function Navbar({
         { title: "About", url: "#about" },
         { title: "Skills", url: "#skills" },
         { title: "Projects", url: "#projects" },
-        { title: "Resume", url: "/resu3.pdf" },
+        { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
     mobileExtraLinks = [
         { name: "LinkedIn", url: "#" },
@@ -90,7 +90,7 @@ export default function Navbar({
     ],
     auth = {
         login: { text: "Contact Me", url: "#contact" },
-        signup: { text: "Download CV", url: "/resu3.pdf" },
+        signup: { text: "Download CV", url: "/Vishnu_Kashyap_Resume.pdf" },
     },
 }: NavbarProps) {
     const [openSearch, setOpenSearch] = React.useState(false);

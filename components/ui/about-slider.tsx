@@ -113,7 +113,7 @@ export const AboutSlider = ({ cards, className }: AboutSliderProps) => {
                                 </div>
 
                                 <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-                                    <a href="/resu3.pdf" download className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors">
+                                    <a href="/Vishnu_Kashyap_Resume.pdf" download className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors">
                                         Download Resume <Download className="w-4 h-4" />
                                     </a>
                                     <div className="flex gap-4">
