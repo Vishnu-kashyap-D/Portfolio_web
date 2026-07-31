@@ -88,16 +88,16 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Image */}
+            {/* Right Image (restored) */}
             <div className="order-1 lg:order-2 flex justify-center">
               <div className="relative w-[380px] h-[500px] md:w-[600px] md:h-[800px] animate-float">
                 {/* Image Mask/Frame */}
                 <div className="absolute inset-0 transition-transform hover:scale-105 duration-500">
                   <Image
-                    src="/hero-nobg.png"
-                    alt="Vishnu Casual"
+                    src="/photo-nobg.png"
+                    alt="Vishnu Spider-Man"
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     priority
                   />
                 </div>
@@ -117,7 +117,7 @@ export default function Home() {
             <div className="lg:col-span-5 flex flex-col gap-8">
               <div className="relative w-[320px] md:w-[420px] mx-auto aspect-[3/4] rounded-2xl overflow-hidden bg-transparent">
                 <Image
-                  src="/photo-nobg-clean.png"
+                  src="/profile.jpg"
                   alt="Vishnu Formal"
                   fill
                   className="object-cover transition-transform duration-700 hover:scale-105"
