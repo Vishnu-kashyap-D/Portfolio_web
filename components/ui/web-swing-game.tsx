@@ -2,6 +2,95 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+const WEB_CORNER = { x: 100, y: 0 };
+const WEB_EDGE_POINTS = [
+    { x: 0, y: 0 },
+    { x: 0, y: 25 },
+    { x: 0, y: 50 },
+    { x: 0, y: 75 },
+    { x: 0, y: 100 },
+    { x: 25, y: 100 },
+    { x: 50, y: 100 },
+    { x: 75, y: 100 },
+    { x: 100, y: 100 },
+];
+const WEB_RING_FRACTIONS = [0.2, 0.4, 0.6, 0.8];
+
+function SpiderWebBackdrop() {
+    const ringPolylines = WEB_RING_FRACTIONS.map((t) =>
+        WEB_EDGE_POINTS.map(
+            (p) => `${WEB_CORNER.x + (p.x - WEB_CORNER.x) * t},${WEB_CORNER.y + (p.y - WEB_CORNER.y) * t}`
+        ).join(" ")
+    );
+
+    return (
+        <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-red-950/70 via-neutral-950 to-black">
+            <div
+                className="absolute inset-0"
+                style={{
+                    background: "radial-gradient(circle at 88% 8%, rgba(220,38,38,0.28), transparent 55%)",
+                }}
+            />
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+                {WEB_EDGE_POINTS.map((p, i) => (
+                    <line
+                        key={`radial-${i}`}
+                        x1={WEB_CORNER.x}
+                        y1={WEB_CORNER.y}
+                        x2={p.x}
+                        y2={p.y}
+                        stroke="rgba(248,113,113,0.22)"
+                        strokeWidth={0.35}
+                    />
+                ))}
+                {ringPolylines.map((pts, i) => (
+                    <polyline
+                        key={`ring-${i}`}
+                        points={pts}
+                        fill="none"
+                        stroke="rgba(248,113,113,0.18)"
+                        strokeWidth={0.35}
+                    />
+                ))}
+            </svg>
+            <SpiderSilhouette className="absolute top-2 right-3 w-9 h-9 text-red-600/70 drop-shadow-[0_0_6px_rgba(220,38,38,0.5)]" />
+        </div>
+    );
+}
+
+function SpiderSilhouette({ className }: { className?: string }) {
+    const legs = [-1, 1].flatMap((side) =>
+        [0, 1, 2, 3].map((i) => {
+            const originY = 10 + i * 1.6;
+            const midX = 12 + side * 7;
+            const midY = originY - 1 + i * 0.5;
+            const endX = 12 + side * 11;
+            const endY = originY + 3.5;
+            return `${side}-${i}|12,${originY} ${midX},${midY} ${endX},${endY}`;
+        })
+    );
+
+    return (
+        <svg viewBox="0 0 24 24" className={className} fill="none">
+            {legs.map((entry) => {
+                const [key, points] = entry.split("|");
+                return (
+                    <polyline
+                        key={key}
+                        points={points}
+                        stroke="currentColor"
+                        strokeWidth={0.9}
+                        strokeLinecap="round"
+                        fill="none"
+                    />
+                );
+            })}
+            <ellipse cx="12" cy="14" rx="3.2" ry="4" fill="currentColor" />
+            <circle cx="12" cy="8.5" r="2.2" fill="currentColor" />
+        </svg>
+    );
+}
+
 const GRAVITY = 1500;
 const SWING_ATTACH_RADIUS = 280;
 const PLAYER_SCREEN_X_RATIO = 0.32;
@@ -560,8 +649,9 @@ export function WebSwingGame() {
             </div>
 
             {!started && !gameOver && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                    <div className="text-center px-6">
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <SpiderWebBackdrop />
+                    <div className="relative z-10 text-center px-6">
                         <p className="text-white text-lg font-semibold mb-2">Click / tap to shoot a web</p>
                         <p className="text-neutral-300 text-sm">Click again to let go and fly. Time your release to swing further.</p>
                         <p className="text-cyan-400 text-sm mt-4">Click to start</p>
@@ -570,8 +660,9 @@ export function WebSwingGame() {
             )}
 
             {gameOver && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <div className="text-center px-6">
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <SpiderWebBackdrop />
+                    <div className="relative z-10 text-center px-6">
                         <p className="text-white text-2xl font-bold mb-1">Web snapped!</p>
                         <p className="text-neutral-300 mb-1">You swung {displayScore}m</p>
                         <p className="text-neutral-500 text-sm mb-4">Best: {bestScore}m</p>
