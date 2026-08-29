@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Navbar from "@/components/ui/navbar";
 import { Footer } from "@/components/footer";
 import AnoAI from "@/components/ui/animated-shader-background";
@@ -11,6 +12,11 @@ import { GithubSection } from "@/components/github-section";
 import { ContactSection } from "@/components/contact-section";
 import Image from "next/image";
 import { Github, Linkedin, Instagram, Mail, Twitter } from "lucide-react";
+
+const WebSwingGame = dynamic(
+    () => import("@/components/ui/web-swing-game").then((mod) => mod.WebSwingGame),
+    { ssr: false }
+);
 
 // Data for the About Slider
 const aboutCards: AboutCardData[] = [
@@ -136,6 +142,17 @@ export default function Home() {
 
         {/* Section 2.5: Skills */}
         <SkillsSection />
+
+        {/* Section 2.6: Mini Game */}
+        <section id="web-swing" className="container mx-auto px-4 relative z-10">
+          <div className="mb-8 text-center md:text-left">
+            <h2 className="text-3xl md:text-5xl font-bold mb-2">Web-Slinger Break</h2>
+            <p className="text-muted-foreground text-lg">
+              Swing through the skyline — click/tap to shoot a web, click again to let go.
+            </p>
+          </div>
+          <WebSwingGame />
+        </section>
 
         {/* Section 2.75: Open Source */}
         <GithubSection />
