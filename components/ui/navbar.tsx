@@ -85,8 +85,8 @@ export default function Navbar({
         { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
     mobileExtraLinks = [
-        { name: "LinkedIn", url: "#" },
-        { name: "GitHub", url: "#" },
+        { name: "LinkedIn", url: "https://linkedin.com/in/vishnu-kashyap-d" },
+        { name: "GitHub", url: "https://github.com/Vishnu-kashyap-D" },
     ],
     auth = {
         login: { text: "Contact Me", url: "#contact" },
@@ -95,6 +95,13 @@ export default function Navbar({
 }: NavbarProps) {
     const [openSearch, setOpenSearch] = React.useState(false);
     const { setTheme, theme } = useTheme();
+
+    const goToSection = (id: string) => {
+        setOpenSearch(false);
+        setTimeout(() => {
+            document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        }, 150);
+    };
 
     return (
         <section className="py-4 fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
@@ -172,6 +179,8 @@ export default function Navbar({
                                                         key={idx}
                                                         className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground"
                                                         href={link.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                     >
                                                         {link.name}
                                                     </a>
@@ -200,10 +209,10 @@ export default function Navbar({
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup className="text-gray-500" heading="Suggestions">
-                        <CommandItem>Deep Learning</CommandItem>
-                        <CommandItem>Computer Vision</CommandItem>
-                        <CommandItem>Projects</CommandItem>
-                        <CommandItem>Contact</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills")}>Deep Learning</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills")}>Computer Vision</CommandItem>
+                        <CommandItem onSelect={() => goToSection("projects")}>Projects</CommandItem>
+                        <CommandItem onSelect={() => goToSection("contact")}>Contact</CommandItem>
                     </CommandGroup>
                 </CommandList>
             </CommandDialog>

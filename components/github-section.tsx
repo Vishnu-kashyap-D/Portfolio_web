@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { GithubHeatmap } from "@/components/ui/github-heatmap";
+import dynamic from "next/dynamic";
+
+const GithubHeatmap = dynamic(
+    () => import("@/components/ui/github-heatmap").then((mod) => mod.GithubHeatmap),
+    { ssr: false }
+);
 
 export function GithubSection() {
     return (

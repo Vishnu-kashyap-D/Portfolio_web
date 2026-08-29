@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import OrbitingSkills from "@/components/ui/orbiting-skills";
+import dynamic from "next/dynamic";
 import ShinyButton from "@/components/ui/shiny-button";
 import { SkillsTabs } from "@/components/ui/skills-tabs";
 import { motion, AnimatePresence } from "motion/react";
@@ -11,6 +11,10 @@ import {
 } from "react-icons/si";
 import { BiNetworkChart, BiBrain, BiVideo } from "react-icons/bi";
 import { Globe, Code, Scan, Cloud } from "lucide-react";
+
+const OrbitingSkills = dynamic(() => import("@/components/ui/orbiting-skills"), {
+    ssr: false,
+});
 
 
 // Skill Data Structure

@@ -28,7 +28,7 @@ export function RevealText({
         "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
         "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
         "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&q=80",
-        "https://images.unsplash.com/photo-1531297461136-82lw9z1l3715?w=800&q=80",
+        "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&q=80",
         "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
     ]
 }: RevealTextProps) {

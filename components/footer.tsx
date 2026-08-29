@@ -13,7 +13,7 @@ export function Footer() {
                     <div className="flex flex-col items-center md:items-start gap-2">
                         <h3 className="text-xl font-bold tracking-wider">
                             <span className="text-cyan-400">VISHNU</span>
-                            <span className="text-white ml-2">KASHYAP D</span>
+                            <span className="text-foreground ml-2">KASHYAP D</span>
                         </h3>
                         <p className="text-xs text-neutral-500">
                             © {currentYear} Vishnu Kashyap D. All rights reserved.
@@ -25,7 +25,7 @@ export function Footer() {
                         <Link
                             href="https://github.com/Vishnu-kashyap-D"
                             target="_blank"
-                            className="text-neutral-400 hover:text-white transition-colors"
+                            className="text-neutral-400 hover:text-foreground transition-colors"
                         >
                             <Github className="w-5 h-5" />
                             <span className="sr-only">GitHub</span>
@@ -33,22 +33,22 @@ export function Footer() {
                         <Link
                             href="https://linkedin.com/in/vishnu-kashyap-d"
                             target="_blank"
-                            className="text-neutral-400 hover:text-white transition-colors"
+                            className="text-neutral-400 hover:text-foreground transition-colors"
                         >
                             <Linkedin className="w-5 h-5" />
                             <span className="sr-only">LinkedIn</span>
                         </Link>
                         <Link
-                            href="https://instagram.com"
+                            href="https://www.instagram.com/vishnukashyapd18/"
                             target="_blank"
-                            className="text-neutral-400 hover:text-white transition-colors"
+                            className="text-neutral-400 hover:text-foreground transition-colors"
                         >
                             <Instagram className="w-5 h-5" />
                             <span className="sr-only">Instagram</span>
                         </Link>
                         <Link
                             href="mailto:vishnukashyapd18@gmail.com"
-                            className="text-neutral-400 hover:text-white transition-colors"
+                            className="text-neutral-400 hover:text-foreground transition-colors"
                         >
                             <Mail className="w-5 h-5" />
                             <span className="sr-only">Email</span>

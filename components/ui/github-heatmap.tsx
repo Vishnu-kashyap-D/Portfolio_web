@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
@@ -10,11 +10,22 @@ interface GithubHeatmapProps {
     className?: string;
 }
 
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
 export function GithubHeatmap({ className }: GithubHeatmapProps) {
     const explicitTheme = {
         light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
         dark: ['#171717', '#172554', '#1e40af', '#3b82f6', '#22d3ee'], // Matched to the previous blue/cyan theme
     };
+
+    // react-github-calendar only fetches on mount, so force a remount on an
+    // interval to pick up new contributions without a page reload.
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    useEffect(() => {
+        const id = setInterval(() => setRefreshKey((k) => k + 1), REFRESH_INTERVAL_MS);
+        return () => clearInterval(id);
+    }, []);
 
     return (
         <div className={cn("w-full relative", className)}>
@@ -40,6 +51,7 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
             <div className="w-full p-6 md:p-8 rounded-3xl bg-neutral-900/50 backdrop-blur-sm border border-white/5 relative overflow-x-auto custom-scrollbar flex justify-center text-white">
                 <div className="min-w-[800px] flex justify-center py-4">
                     <GitHubCalendar
+                        key={refreshKey}
                         username="Vishnu-kashyap-D"
                         colorScheme="dark"
                         theme={explicitTheme}

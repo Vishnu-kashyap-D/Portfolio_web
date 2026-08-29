@@ -36,11 +36,14 @@ export function ContactSection() {
             params.append("subject", formData.subject);
             params.append("message", formData.message);
 
-            await fetch(SCRIPT_URL, {
+            const response = await fetch(SCRIPT_URL, {
                 method: "POST",
-                mode: "no-cors",
                 body: params,
             });
+
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
 
             setIsSuccess(true);
             setFormData({ name: "", email: "", subject: "", message: "" });
@@ -85,18 +88,21 @@ export function ContactSection() {
                             icon: LinkedinIcon,
                             label: 'LinkedIn',
                             value: 'linkedin.com/in/vishnu-kashyap-d',
+                            href: 'https://linkedin.com/in/vishnu-kashyap-d',
                             className: 'cursor-pointer hover:text-primary',
                         },
                         {
                             icon: GithubIcon, // Using the already imported GithubIcon
                             label: 'GitHub',
                             value: 'github.com/Vishnu-kashyap-D',
+                            href: 'https://github.com/Vishnu-kashyap-D',
                             className: 'cursor-pointer hover:text-primary',
                         },
                         {
-                            icon: Instagram, // Need to import this
+                            icon: Instagram,
                             label: 'Instagram',
-                            value: 'instagram.com',
+                            value: 'instagram.com/vishnukashyapd18',
+                            href: 'https://www.instagram.com/vishnukashyapd18/',
                             className: 'cursor-pointer hover:text-primary',
                         }
                     ]}

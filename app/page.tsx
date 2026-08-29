@@ -20,13 +20,13 @@ const aboutCards: AboutCardData[] = [
     content: {
       bio: "I am an enthusiastic AI & ML Engineer with a robust foundation in Computer Vision, Deep Learning, and Open Source development. My expertise lies in architecting social-impact AI solutions and driving innovation within open-source ecosystems. With a proven track record of 4+ hackathon victories and CTF wins, I combine technical excellence with leadership, having organized large-scale technical events and mentored thriving student communities.",
       name: "Vishnu Kashyap D",
-      email: "vishnukashyapd@gmail.com", // Assuming/Placeholder
+      email: "vishnukashyapd18@gmail.com",
       location: "Bangalore, India",
       availability: "Open to opportunities",
       socials: [
         { platform: "LinkedIn", url: "https://linkedin.com/in/vishnu-kashyap-d", icon: <Linkedin className="w-5 h-5" /> },
         { platform: "GitHub", url: "https://github.com/Vishnu-kashyap-D", icon: <Github className="w-5 h-5" /> },
-        { platform: "Instagram", url: "https://instagram.com", icon: <Instagram className="w-5 h-5" /> }, // Placeholder
+        { platform: "Instagram", url: "https://www.instagram.com/vishnukashyapd18/", icon: <Instagram className="w-5 h-5" /> },
       ]
     }
   },
@@ -37,8 +37,8 @@ const aboutCards: AboutCardData[] = [
       socials: [
         { platform: "LinkedIn", handle: "@vishnu-kashyap-d", url: "https://linkedin.com/in/vishnu-kashyap-d", icon: <Linkedin className="w-6 h-6" /> },
         { platform: "GitHub", handle: "@Vishnu-kashyap-D", url: "https://github.com/Vishnu-kashyap-D", icon: <Github className="w-6 h-6" /> },
-        { platform: "Email", handle: "vishnukashyapd@gmail.com", url: "mailto:vishnukashyapd@gmail.com", icon: <Mail className="w-6 h-6" /> },
-        { platform: "Instagram", handle: "@vishnu", url: "https://instagram.com", icon: <Instagram className="w-6 h-6" /> },
+        { platform: "Email", handle: "vishnukashyapd18@gmail.com", url: "mailto:vishnukashyapd18@gmail.com", icon: <Mail className="w-6 h-6" /> },
+        { platform: "Instagram", handle: "@vishnukashyapd18", url: "https://www.instagram.com/vishnukashyapd18/", icon: <Instagram className="w-6 h-6" /> },
       ]
     }
   }
