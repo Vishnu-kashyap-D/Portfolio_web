@@ -17,6 +17,8 @@ export function ProjectsGrid() {
                     title="Safe Vision"
                     description="Real-time assault detection (92% accuracy) with Blockchain evidence transfer."
                     link="https://github.com/UmashankarGouda/SafeVision"
+                    image="/projects/safe-vision-demo.png"
+                    imageAlt="Safe Vision surveillance app detecting suspicious behavior and flagging it in real time on a live video feed"
                 />
 
                 {/* 2. Krishi Sakhi */}
@@ -45,6 +47,8 @@ export function ProjectsGrid() {
                     title="Crop Disease Detection"
                     description="Deep learning CNN-based model reaching 85-90% classification accuracy on leaf datasets."
                     link="#"
+                    image="/projects/crop-disease-leaf.jpg"
+                    imageAlt="Close-up of a leaf showing visible disease spots, representative of the crop disease classification dataset"
                 />
             </ul>
 
