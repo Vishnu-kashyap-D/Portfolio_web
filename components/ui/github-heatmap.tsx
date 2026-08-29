@@ -28,50 +28,39 @@ export function GithubHeatmap({ className }: GithubHeatmapProps) {
     }, []);
 
     return (
-        <div className={cn("w-full relative", className)}>
-            {/* Header with Title */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-8 gap-8 relative z-50">
-                <div>
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 tracking-wider">
-                            GITHUB CONTRIBUTIONS & ACTIVITY
-                        </div>
-                    </div>
-
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                        Open Source
-                    </h2>
-                    <p className="text-neutral-400 max-w-lg">
-                        Snapshot of my open-source activity and contributions from GitHub over the last year.
-                    </p>
-                </div>
+        <div
+            className={cn(
+                "w-full h-full rounded-2xl bg-neutral-900/50 backdrop-blur-sm border border-white/5 p-5 flex flex-col",
+                className
+            )}
+        >
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-semibold text-white">GitHub</h3>
+                <Link
+                    href="https://github.com/Vishnu-kashyap-D"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-neutral-500 hover:text-cyan-400 transition-colors group"
+                >
+                    Profile
+                    <ArrowUpRight className="w-3 h-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
             </div>
 
-            {/* Heatmap Card */}
-            <div className="w-full p-6 md:p-8 rounded-3xl bg-neutral-900/50 backdrop-blur-sm border border-white/5 relative overflow-x-auto custom-scrollbar flex justify-center text-white">
-                <div className="min-w-[800px] flex justify-center py-4">
+            <div className="flex-1 flex items-center overflow-x-auto custom-scrollbar text-white">
+                <div className="min-w-[600px] w-full">
                     <GitHubCalendar
                         key={refreshKey}
                         username="Vishnu-kashyap-D"
                         colorScheme="dark"
                         theme={explicitTheme}
-                        fontSize={12}
-                        blockSize={12}
-                        blockMargin={4}
+                        fontSize={10}
+                        blockSize={8}
+                        blockMargin={2}
+                        showColorLegend={false}
+                        showTotalCount={false}
                     />
                 </div>
-            </div>
-
-            {/* Footer */}
-            <div className="flex flex-col md:flex-row justify-end items-center mt-6 gap-4">
-                <Link
-                    href="https://github.com/Vishnu-kashyap-D"
-                    target="_blank"
-                    className="flex items-center gap-2 text-xs text-neutral-500 hover:text-cyan-400 transition-colors group"
-                >
-                    View full profile on GitHub
-                    <ArrowUpRight className="w-3 h-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
             </div>
         </div>
     );

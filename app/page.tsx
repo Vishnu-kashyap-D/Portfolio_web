@@ -8,8 +8,7 @@ import { RevealText } from "@/components/ui/reveal-text";
 import { AboutSlider, AboutCardData } from "@/components/ui/about-slider"; // Import the new slider
 import { ProjectsGrid } from "@/components/projects-grid";
 import { SkillsSection } from "@/components/skills-section";
-import { GithubSection } from "@/components/github-section";
-import { LeetcodeSection } from "@/components/leetcode-section";
+import { CodingActivitySection } from "@/components/coding-activity-section";
 import { ContactSection } from "@/components/contact-section";
 import Image from "next/image";
 import { Github, Linkedin, Instagram, Mail, Twitter } from "lucide-react";
@@ -155,11 +154,8 @@ export default function Home() {
           <WebSwingGame />
         </section>
 
-        {/* Section 2.75: Open Source */}
-        <GithubSection />
-
-        {/* Section 2.8: Competitive Programming */}
-        <LeetcodeSection />
+        {/* Section 2.75: Coding Activity */}
+        <CodingActivitySection />
 
         {/* Section 3: Projects */}
         <section id="projects" className="container mx-auto py-24 px-4 relative z-10">
