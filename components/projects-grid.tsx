@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Shield, Music, Sprout, Scan, Trophy, ArrowUpRight, ArrowRight, Database } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { cn } from "@/lib/utils";
@@ -7,11 +8,11 @@ import Link from "next/link";
 
 export function ProjectsGrid() {
     return (
-        <div className="relative">
-            <ul className="grid grid-cols-1 gap-4 md:grid-cols-12">
+        <div className="relative space-y-4">
+            {/* Flagship projects with real homepage screenshots */}
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {/* 1. Safe Vision */}
                 <GridItem
-                    area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
                     icon={<Shield className="h-4 w-4" />}
                     title="Safe Vision"
                     description="Real-time assault detection (92% accuracy) with Blockchain evidence transfer."
@@ -20,31 +21,35 @@ export function ProjectsGrid() {
 
                 {/* 2. Krishi Sakhi */}
                 <GridItem
-                    area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
                     icon={<Sprout className="h-4 w-4" />}
                     title="Krishi Sakhi"
                     description="AI Farming Assistant supporting Malayalam voice + text with >95% ASR accuracy."
                     link="https://github.com/Vishnu-kashyap-D/sih25074"
+                    image="/projects/krishi-sakhi-homepage.png"
+                    imageAlt="Krishi Sakhi homepage showing the AI farming assistant welcome screen and feature cards"
                 />
 
                 {/* 3. Music Genre Classification */}
                 <GridItem
-                    area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
                     icon={<Music className="h-4 w-4" />}
                     title="SongSense"
                     description="Music Genre Classifier, Audio signal processing & spectral analysis model achieving 88.4% accuracy."
                     link="https://github.com/Vishnu-kashyap-D/Music_genre1"
+                    image="/projects/songsense-homepage.png"
+                    imageAlt="SongSense homepage showing the audio upload and live recording interface"
                 />
 
                 {/* 4. Crop Disease Detection */}
                 <GridItem
-                    area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/3/13]"
                     icon={<Scan className="h-4 w-4" />}
                     title="Crop Disease Detection"
                     description="Deep learning CNN-based model reaching 85-90% classification accuracy on leaf datasets."
                     link="#"
                 />
+            </ul>
 
+            {/* Remaining projects */}
+            <ul className="grid grid-cols-1 gap-4 md:grid-cols-12">
                 {/* 5. Cricket Turf/Pitch Booking Website */}
                 <GridItem
                     area="md:col-span-6"
@@ -86,14 +91,16 @@ export function ProjectsGrid() {
 }
 
 interface GridItemProps {
-    area: string;
+    area?: string;
     icon: React.ReactNode;
     title: string;
     description: React.ReactNode;
     link?: string;
+    image?: string;
+    imageAlt?: string;
 }
 
-const GridItem = ({ area, icon, title, description, link = "#" }: GridItemProps) => {
+const GridItem = ({ area, icon, title, description, link = "#", image, imageAlt }: GridItemProps) => {
     const isLink = link !== "#";
     const Content = (
         <>
@@ -106,8 +113,19 @@ const GridItem = ({ area, icon, title, description, link = "#" }: GridItemProps)
                     inactiveZone={0.01}
                     borderWidth={3}
                 />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-background/50 backdrop-blur-sm p-6 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-6 transition-colors hover:bg-background/80">
-                    <div className="relative flex flex-1 flex-col justify-between gap-3">
+                <div className="relative flex h-full flex-col overflow-hidden rounded-xl border-[0.75px] bg-background/50 backdrop-blur-sm shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] transition-colors hover:bg-background/80">
+                    {image && (
+                        <div className="relative w-full aspect-video shrink-0 overflow-hidden border-b-[0.75px] border-border bg-muted">
+                            <Image
+                                src={image}
+                                alt={imageAlt ?? `${title} homepage screenshot`}
+                                fill
+                                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                                className="object-cover object-top"
+                            />
+                        </div>
+                    )}
+                    <div className={cn("relative flex flex-1 flex-col justify-between gap-3 p-6", image && "gap-2")}>
                         <div className="flex justify-between items-start">
                             <div className="w-fit rounded-lg border-[0.75px] border-border bg-muted p-2">
                                 {icon}
@@ -129,7 +147,7 @@ const GridItem = ({ area, icon, title, description, link = "#" }: GridItemProps)
     );
 
     return (
-        <li className={cn("min-h-[14rem] list-none group", area)}>
+        <li className={cn("min-h-[14rem] list-none group", image && "min-h-[22rem]", area)}>
             {isLink ? (
                 <Link href={link} target="_blank" rel="noopener noreferrer" className="block h-full cursor-pointer">
                     {Content}
