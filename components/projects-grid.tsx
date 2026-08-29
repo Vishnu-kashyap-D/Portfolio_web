@@ -38,23 +38,14 @@ export function ProjectsGrid() {
 
                 {/* 4. Crop Disease Detection */}
                 <GridItem
-                    area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
+                    area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/3/13]"
                     icon={<Scan className="h-4 w-4" />}
                     title="Crop Disease Detection"
                     description="Deep learning CNN-based model reaching 85-90% classification accuracy on leaf datasets."
                     link="#"
                 />
 
-                {/* 5. More Projects */}
-                <GridItem
-                    area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-                    icon={<ArrowRight className="h-4 w-4" />}
-                    title="More Projects"
-                    description="Constantly building and exploring new technologies. Check GitHub for latest updates."
-                    link="https://github.com/Vishnu-kashyap-D"
-                />
-
-                {/* 6. Cricket Turf/Pitch Booking Website */}
+                {/* 5. Cricket Turf/Pitch Booking Website */}
                 <GridItem
                     area="md:col-span-6"
                     icon={<Database className="h-4 w-4" />}
@@ -63,13 +54,22 @@ export function ProjectsGrid() {
                     link="#"
                 />
 
-                {/* 7. Nutritional Suggestion Website */}
+                {/* 6. Nutritional Suggestion Website */}
                 <GridItem
                     area="md:col-span-6"
                     icon={<Sprout className="h-4 w-4" />}
                     title="Nutritional Suggestion App"
                     description="Responsive web app generating personalized diet plans based on BMI and user metrics."
                     link="#"
+                />
+
+                {/* 7. More Projects */}
+                <GridItem
+                    area="md:col-span-12"
+                    icon={<ArrowRight className="h-4 w-4" />}
+                    title="More Projects"
+                    description="Constantly building and exploring new technologies. Check GitHub for latest updates."
+                    link="https://github.com/Vishnu-kashyap-D"
                 />
 
                 {/* 8. Key Achievements */}
