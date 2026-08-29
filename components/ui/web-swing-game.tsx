@@ -91,7 +91,9 @@ function SpiderSilhouette({ className }: { className?: string }) {
     );
 }
 
-const GRAVITY = 1500;
+const GRAVITY = 950;
+const STEER_SENSITIVITY = 0.004;
+const STEER_MAX_DELTA = 40;
 const SWING_ATTACH_RADIUS = 280;
 const PLAYER_SCREEN_X_RATIO = 0.32;
 const ANCHOR_MIN_GAP = 150;
@@ -630,8 +632,11 @@ export function WebSwingGame() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const lastPointerXRef = useRef<number | null>(null);
+
     const onPointerDown = (e: React.PointerEvent) => {
         e.preventDefault();
+        lastPointerXRef.current = e.clientX;
         if (gameOver || !started) {
             resetGame();
             return;
@@ -639,11 +644,28 @@ export function WebSwingGame() {
         handleAction();
     };
 
+    const onPointerMove = (e: React.PointerEvent) => {
+        const s = stateRef.current;
+        if (!s.swinging) {
+            lastPointerXRef.current = e.clientX;
+            return;
+        }
+        if (lastPointerXRef.current !== null) {
+            const deltaX = Math.max(
+                -STEER_MAX_DELTA,
+                Math.min(STEER_MAX_DELTA, e.clientX - lastPointerXRef.current)
+            );
+            s.angularVel += deltaX * STEER_SENSITIVITY;
+        }
+        lastPointerXRef.current = e.clientX;
+    };
+
     return (
         <div
             ref={containerRef}
             className="relative w-full h-[420px] rounded-3xl overflow-hidden border border-white/10 select-none touch-none"
             onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
         >
             <canvas ref={canvasRef} className="block w-full h-full cursor-pointer" />
 
