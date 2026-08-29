@@ -11,6 +11,9 @@ const ANCHOR_MIN_Y_RATIO = 0.12;
 const ANCHOR_MAX_Y_RATIO = 0.38;
 const BUILDING_WIDTH = 90;
 const START_VX = 230;
+const FIXED_DT = 1 / 120;
+const MAX_SUBSTEPS = 8;
+const CAMERA_SMOOTHING = 10; // higher = snappier follow
 
 interface Anchor {
     x: number;
@@ -34,6 +37,12 @@ interface GameState {
     height: number;
     running: boolean;
     started: boolean;
+    cameraX: number;
+}
+
+function pseudoRandom(seed: number) {
+    const x = Math.sin(seed * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
 }
 
 function createInitialState(width: number, height: number): GameState {
@@ -53,7 +62,24 @@ function createInitialState(width: number, height: number): GameState {
         height,
         running: true,
         started: false,
+        cameraX: -width * PLAYER_SCREEN_X_RATIO,
     };
+}
+
+// Static far-parallax skyline tiles, generated once and repeated via modulo.
+function buildSkylineTile(seedOffset: number, count: number, minH: number, maxH: number, tileWidth: number) {
+    const buildings: { x: number; w: number; h: number; seed: number }[] = [];
+    let x = 0;
+    let i = 0;
+    while (x < tileWidth && i < count * 3) {
+        const seed = seedOffset + i;
+        const w = 40 + pseudoRandom(seed) * 50;
+        const h = minH + pseudoRandom(seed + 0.5) * (maxH - minH);
+        buildings.push({ x, w, h, seed });
+        x += w + 8 + pseudoRandom(seed + 0.25) * 20;
+        i++;
+    }
+    return { buildings, tileWidth };
 }
 
 export function WebSwingGame() {
@@ -62,7 +88,17 @@ export function WebSwingGame() {
     const stateRef = useRef<GameState>(createInitialState(800, 420));
     const rafRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
+    const accumulatorRef = useRef(0);
     const displayScoreRef = useRef(0);
+    const skylineFarRef = useRef(buildSkylineTile(1, 8, 60, 160, 500));
+    const skylineNearRef = useRef(buildSkylineTile(50, 6, 90, 220, 420));
+    const starsRef = useRef(
+        Array.from({ length: 40 }, (_, i) => ({
+            x: pseudoRandom(i * 3.1) * 1000,
+            y: pseudoRandom(i * 7.7) * 0.5,
+            r: 0.6 + pseudoRandom(i * 2.3) * 1.2,
+        }))
+    );
 
     const [displayScore, setDisplayScore] = useState(0);
     const [bestScore, setBestScore] = useState(0);
@@ -101,6 +137,7 @@ export function WebSwingGame() {
         ensureAnchorsAhead(stateRef.current);
         displayScoreRef.current = 0;
         lastTimeRef.current = 0;
+        accumulatorRef.current = 0;
     }, [ensureAnchorsAhead]);
 
     const resetGame = useCallback(() => {
@@ -145,7 +182,6 @@ export function WebSwingGame() {
             const angle = Math.atan2(dx, dy);
             const cosA = Math.cos(angle);
             const sinA = Math.sin(angle);
-            // angularVel derived from current linear velocity (tangential component / radius)
             const angularVel = (s.vx * cosA - s.vy * sinA) / ropeLength;
             s.anchor = best;
             s.ropeLength = ropeLength;
@@ -182,82 +218,282 @@ export function WebSwingGame() {
         const resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(container);
 
-        const draw = (s: GameState) => {
-            const { width, height } = s;
-            const cameraX = s.playerWorldX - width * PLAYER_SCREEN_X_RATIO;
+        const stepPhysics = (s: GameState, dt: number) => {
+            if (s.swinging) {
+                const angularAcc = -(GRAVITY / s.ropeLength) * Math.sin(s.angle);
+                s.angularVel += angularAcc * dt;
+                s.angle += s.angularVel * dt;
+                s.playerWorldX = s.anchor!.x + s.ropeLength * Math.sin(s.angle);
+                s.playerY = s.anchor!.y + s.ropeLength * Math.cos(s.angle);
+            } else {
+                s.vy += GRAVITY * dt;
+                s.playerWorldX += s.vx * dt;
+                s.playerY += s.vy * dt;
+                if (s.playerY < 10) {
+                    s.playerY = 10;
+                    s.vy = Math.max(s.vy, 0);
+                }
+            }
+        };
 
-            // Sky
+        const drawBackground = (s: GameState, cameraX: number) => {
+            const { width, height } = s;
+
             const grad = ctx.createLinearGradient(0, 0, 0, height);
-            grad.addColorStop(0, "#0a0a12");
-            grad.addColorStop(1, "#13131f");
+            grad.addColorStop(0, "#0a0a16");
+            grad.addColorStop(0.6, "#0f0f1e");
+            grad.addColorStop(1, "#15151f");
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, width, height);
 
-            // Buildings + anchors
+            // Moon
+            ctx.beginPath();
+            ctx.arc(width * 0.82, height * 0.16, 22, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(226, 232, 240, 0.85)";
+            ctx.fill();
+
+            // Stars (fixed screen positions, tiled horizontally)
+            ctx.fillStyle = "rgba(255,255,255,0.55)";
+            for (const star of starsRef.current) {
+                const sx = ((star.x - cameraX * 0.02) % (width + 60) + width + 60) % (width + 60) - 30;
+                const sy = star.y * height * 0.6;
+                ctx.beginPath();
+                ctx.arc(sx, sy, star.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            const drawParallaxLayer = (
+                tile: { buildings: { x: number; w: number; h: number; seed: number }[]; tileWidth: number },
+                parallax: number,
+                color: string,
+                windowColor: string
+            ) => {
+                const scrollX = cameraX * parallax;
+                const offset = ((scrollX % tile.tileWidth) + tile.tileWidth) % tile.tileWidth;
+                const tilesNeeded = Math.ceil(width / tile.tileWidth) + 2;
+                for (let t = -1; t < tilesNeeded; t++) {
+                    const baseX = t * tile.tileWidth - offset;
+                    for (const b of tile.buildings) {
+                        const bx = baseX + b.x;
+                        if (bx + b.w < 0 || bx > width) continue;
+                        const by = height - b.h;
+                        ctx.fillStyle = color;
+                        ctx.fillRect(bx, by, b.w, b.h);
+
+                        // A few lit windows per building, deterministic per building seed
+                        const cols = Math.max(1, Math.floor(b.w / 14));
+                        const rows = Math.max(1, Math.floor(b.h / 18));
+                        for (let cy = 0; cy < rows; cy++) {
+                            for (let cx = 0; cx < cols; cx++) {
+                                const wSeed = b.seed * 97 + cy * 13 + cx * 31;
+                                if (pseudoRandom(wSeed) > 0.78) {
+                                    ctx.fillStyle = windowColor;
+                                    ctx.fillRect(bx + 4 + cx * 14, by + 6 + cy * 18, 5, 7);
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            drawParallaxLayer(skylineFarRef.current, 0.15, "#1a1a2e", "rgba(180, 200, 255, 0.25)");
+            drawParallaxLayer(skylineNearRef.current, 0.4, "#20202f", "rgba(250, 204, 21, 0.35)");
+        };
+
+        const drawForeground = (s: GameState, cameraX: number) => {
+            const { width, height } = s;
             for (const a of s.anchors) {
                 const screenX = a.x - cameraX;
                 if (screenX < -BUILDING_WIDTH || screenX > width + BUILDING_WIDTH) continue;
 
-                const shade = 24 + Math.floor(a.shade * 14);
-                ctx.fillStyle = `rgb(${shade}, ${shade + 2}, ${shade + 8})`;
+                const shade = 26 + Math.floor(a.shade * 16);
+                ctx.fillStyle = `rgb(${shade}, ${shade + 2}, ${shade + 10})`;
                 ctx.fillRect(screenX - BUILDING_WIDTH / 2, a.y, BUILDING_WIDTH, height - a.y);
 
-                // Anchor point glow
+                // Windows on foreground buildings
+                const buildingHeight = height - a.y;
+                const cols = Math.max(1, Math.floor(BUILDING_WIDTH / 16));
+                const rows = Math.max(1, Math.floor(buildingHeight / 20));
+                const seedBase = Math.floor(a.x);
+                for (let cy = 0; cy < rows; cy++) {
+                    for (let cx = 0; cx < cols; cx++) {
+                        const wSeed = seedBase * 13 + cy * 7 + cx * 41;
+                        if (pseudoRandom(wSeed) > 0.72) {
+                            ctx.fillStyle = "rgba(250, 204, 21, 0.55)";
+                            ctx.fillRect(
+                                screenX - BUILDING_WIDTH / 2 + 6 + cx * 16,
+                                a.y + 8 + cy * 20,
+                                6,
+                                9
+                            );
+                        }
+                    }
+                }
+
+                // Anchor point glow (cheap radial gradient instead of shadowBlur)
+                const glowGrad = ctx.createRadialGradient(screenX, a.y, 0, screenX, a.y, 10);
+                glowGrad.addColorStop(0, "rgba(34, 211, 238, 0.9)");
+                glowGrad.addColorStop(1, "rgba(34, 211, 238, 0)");
+                ctx.fillStyle = glowGrad;
+                ctx.fillRect(screenX - 10, a.y - 10, 20, 20);
                 ctx.beginPath();
-                ctx.arc(screenX, a.y, 5, 0, Math.PI * 2);
+                ctx.arc(screenX, a.y, 4, 0, Math.PI * 2);
                 ctx.fillStyle = "#22d3ee";
-                ctx.shadowColor = "#22d3ee";
-                ctx.shadowBlur = 8;
                 ctx.fill();
-                ctx.shadowBlur = 0;
             }
+        };
+
+        const drawSpiderman = (
+            playerScreenX: number,
+            playerY: number,
+            s: GameState,
+            cameraX: number,
+            t: number
+        ) => {
+            let dirX: number;
+            let dirY: number;
+            if (s.swinging) {
+                dirX = Math.cos(s.angle);
+                dirY = -Math.sin(s.angle);
+            } else {
+                const speed = Math.hypot(s.vx, s.vy) || 1;
+                dirX = s.vx / speed;
+                dirY = s.vy / speed;
+            }
+            const angle = Math.atan2(dirY, dirX);
+            const fx = Math.cos(angle);
+            const fy = Math.sin(angle);
+
+            const headX = playerScreenX + fx * 9;
+            const headY = playerY + fy * 9;
+            const shoulderX = playerScreenX + fx * 3;
+            const shoulderY = playerY + fy * 3;
+            const hipX = playerScreenX - fx * 7;
+            const hipY = playerY - fy * 7;
+
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            // Legs (trailing, slight flutter)
+            const legFlutter = Math.sin(t / 90) * 0.12;
+            for (const side of [1, -1]) {
+                const legAngle = angle + Math.PI + side * (0.42 + legFlutter);
+                const kneeX = hipX + Math.cos(legAngle) * 8;
+                const kneeY = hipY + Math.sin(legAngle) * 8;
+                const footAngle = legAngle - side * 0.35;
+                const footX = kneeX + Math.cos(footAngle) * 7;
+                const footY = kneeY + Math.sin(footAngle) * 7;
+                ctx.beginPath();
+                ctx.moveTo(hipX, hipY);
+                ctx.lineTo(kneeX, kneeY);
+                ctx.lineTo(footX, footY);
+                ctx.strokeStyle = "#1d4ed8";
+                ctx.lineWidth = 3.5;
+                ctx.stroke();
+            }
+
+            // Arms
+            if (s.swinging && s.anchor) {
+                const anchorScreenX = s.anchor.x - cameraX;
+                const toAnchorAngle = Math.atan2(s.anchor.y - shoulderY, anchorScreenX - shoulderX);
+                const handX = shoulderX + Math.cos(toAnchorAngle) * 13;
+                const handY = shoulderY + Math.sin(toAnchorAngle) * 13;
+                ctx.beginPath();
+                ctx.moveTo(shoulderX, shoulderY);
+                ctx.lineTo(handX, handY);
+                ctx.strokeStyle = "#dc2626";
+                ctx.lineWidth = 3.5;
+                ctx.stroke();
+
+                const trailAngle = angle + Math.PI - 0.5;
+                const otherHandX = shoulderX + Math.cos(trailAngle) * 10;
+                const otherHandY = shoulderY + Math.sin(trailAngle) * 10;
+                ctx.beginPath();
+                ctx.moveTo(shoulderX, shoulderY);
+                ctx.lineTo(otherHandX, otherHandY);
+                ctx.strokeStyle = "#dc2626";
+                ctx.lineWidth = 3.5;
+                ctx.stroke();
+            } else {
+                const flap = Math.sin(t / 70) * 8 * (Math.PI / 180);
+                for (const side of [1, -1]) {
+                    const armAngle = angle + Math.PI + side * (0.55 + flap);
+                    const handX = shoulderX + Math.cos(armAngle) * 12;
+                    const handY = shoulderY + Math.sin(armAngle) * 12;
+                    ctx.beginPath();
+                    ctx.moveTo(shoulderX, shoulderY);
+                    ctx.lineTo(handX, handY);
+                    ctx.strokeStyle = "#dc2626";
+                    ctx.lineWidth = 3.5;
+                    ctx.stroke();
+                }
+            }
+
+            // Torso
+            ctx.beginPath();
+            ctx.moveTo(shoulderX, shoulderY);
+            ctx.lineTo(hipX, hipY);
+            ctx.strokeStyle = "#dc2626";
+            ctx.lineWidth = 6;
+            ctx.stroke();
+
+            // Head
+            ctx.beginPath();
+            ctx.arc(headX, headY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#b91c1c";
+            ctx.fill();
+
+            // Eye lenses
+            const eyeOffsetAngle = angle + Math.PI / 2;
+            const ex = Math.cos(eyeOffsetAngle) * 2.6;
+            const ey = Math.sin(eyeOffsetAngle) * 2.6;
+            ctx.save();
+            ctx.translate(headX + fx * 1.5, headY + fy * 1.5);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.ellipse(1.5, -2.6, 2.6, 1.7, 0, 0, Math.PI * 2);
+            ctx.ellipse(1.5, 2.6, 2.6, 1.7, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "#f8fafc";
+            ctx.fill();
+            ctx.restore();
+            void ex;
+            void ey;
+        };
+
+        const draw = (s: GameState, t: number) => {
+            const cameraX = s.cameraX;
+            drawBackground(s, cameraX);
+            drawForeground(s, cameraX);
 
             const playerScreenX = s.playerWorldX - cameraX;
 
-            // Web line
             if (s.swinging && s.anchor) {
                 const anchorScreenX = s.anchor.x - cameraX;
                 ctx.beginPath();
                 ctx.moveTo(anchorScreenX, s.anchor.y);
                 ctx.lineTo(playerScreenX, s.playerY);
-                ctx.strokeStyle = "rgba(226, 232, 240, 0.6)";
+                ctx.strokeStyle = "rgba(226, 232, 240, 0.55)";
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
 
-            // Player
-            ctx.beginPath();
-            ctx.arc(playerScreenX, s.playerY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = "#dc2626";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(playerScreenX - 3, s.playerY - 2, 3, 2, -0.3, 0, Math.PI * 2);
-            ctx.ellipse(playerScreenX + 4, s.playerY - 2, 3, 2, 0.3, 0, Math.PI * 2);
-            ctx.fillStyle = "#f8fafc";
-            ctx.fill();
+            drawSpiderman(playerScreenX, s.playerY, s, cameraX, t);
         };
 
         const tick = (time: number) => {
             const s = stateRef.current;
             if (!lastTimeRef.current) lastTimeRef.current = time;
-            const dt = Math.min((time - lastTimeRef.current) / 1000, 0.032);
+            let frameDt = (time - lastTimeRef.current) / 1000;
+            frameDt = Math.min(frameDt, 0.1);
             lastTimeRef.current = time;
 
             if (s.running && s.started) {
-                if (s.swinging) {
-                    const angularAcc = -(GRAVITY / s.ropeLength) * Math.sin(s.angle);
-                    s.angularVel += angularAcc * dt;
-                    s.angle += s.angularVel * dt;
-                    s.playerWorldX = s.anchor!.x + s.ropeLength * Math.sin(s.angle);
-                    s.playerY = s.anchor!.y + s.ropeLength * Math.cos(s.angle);
-                } else {
-                    s.vy += GRAVITY * dt;
-                    s.playerWorldX += s.vx * dt;
-                    s.playerY += s.vy * dt;
-                    if (s.playerY < 10) {
-                        s.playerY = 10;
-                        s.vy = Math.max(s.vy, 0);
-                    }
+                accumulatorRef.current += frameDt;
+                let steps = 0;
+                while (accumulatorRef.current >= FIXED_DT && steps < MAX_SUBSTEPS) {
+                    stepPhysics(s, FIXED_DT);
+                    accumulatorRef.current -= FIXED_DT;
+                    steps++;
                 }
 
                 ensureAnchorsAhead(s);
@@ -283,7 +519,12 @@ export function WebSwingGame() {
                 }
             }
 
-            draw(s);
+            // Smooth camera follow (frame-rate independent easing)
+            const targetCameraX = s.playerWorldX - s.width * PLAYER_SCREEN_X_RATIO;
+            const smoothing = 1 - Math.exp(-CAMERA_SMOOTHING * frameDt);
+            s.cameraX += (targetCameraX - s.cameraX) * smoothing;
+
+            draw(s, time);
             rafRef.current = requestAnimationFrame(tick);
         };
 
