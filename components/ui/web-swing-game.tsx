@@ -101,7 +101,7 @@ const ANCHOR_MAX_Y_RATIO = 0.38;
 const BUILDING_WIDTH = 90;
 const START_VX = 230;
 const FIXED_DT = 1 / 120;
-const MAX_SUBSTEPS = 8;
+const MAX_SUBSTEPS = 40;
 const CAMERA_SMOOTHING = 10; // higher = snappier follow
 
 interface Anchor {
@@ -584,6 +584,10 @@ export function WebSwingGame() {
                     accumulatorRef.current -= FIXED_DT;
                     steps++;
                 }
+                // Drop any backlog beyond the substep budget so a slow device
+                // settles into slightly-reduced speed instead of falling
+                // permanently behind real time.
+                accumulatorRef.current = Math.min(accumulatorRef.current, FIXED_DT * MAX_SUBSTEPS);
 
                 ensureAnchorsAhead(s);
 
