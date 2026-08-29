@@ -9,6 +9,7 @@ import { AboutSlider, AboutCardData } from "@/components/ui/about-slider"; // Im
 import { ProjectsGrid } from "@/components/projects-grid";
 import { SkillsSection } from "@/components/skills-section";
 import { GithubSection } from "@/components/github-section";
+import { LeetcodeSection } from "@/components/leetcode-section";
 import { ContactSection } from "@/components/contact-section";
 import Image from "next/image";
 import { Github, Linkedin, Instagram, Mail, Twitter } from "lucide-react";
@@ -156,6 +157,9 @@ export default function Home() {
 
         {/* Section 2.75: Open Source */}
         <GithubSection />
+
+        {/* Section 2.8: Competitive Programming */}
+        <LeetcodeSection />
 
         {/* Section 3: Projects */}
         <section id="projects" className="container mx-auto py-24 px-4 relative z-10">
