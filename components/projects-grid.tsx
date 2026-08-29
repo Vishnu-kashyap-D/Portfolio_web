@@ -36,7 +36,7 @@ export function ProjectsGrid() {
                     icon={<Music className="h-4 w-4" />}
                     title="SongSense"
                     description="Music Genre Classifier, Audio signal processing & spectral analysis model achieving 88.4% accuracy."
-                    link="https://github.com/Vishnu-kashyap-D/Music_genre1"
+                    link="https://github.com/Vishnu-kashyap-D/Music_Genre_Classification"
                     image="/projects/songsense-homepage.png"
                     imageAlt="SongSense homepage showing the audio upload and live recording interface"
                 />
@@ -60,7 +60,9 @@ export function ProjectsGrid() {
                     icon={<Database className="h-4 w-4" />}
                     title="Cricket Turf Booking"
                     description="Full-stack booking system with DBMS for real-time turf slot reservations and user management."
-                    link="#"
+                    link="https://github.com/Vishnu-kashyap-D/Cricket_pitch-turf-booking"
+                    image="/projects/cricket-turf-booking-homepage.png"
+                    imageAlt="Cricket Turf Booking homepage with a hero banner and a Book Now call to action"
                 />
 
                 {/* 6. Nutritional Suggestion Website */}
