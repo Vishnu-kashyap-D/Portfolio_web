@@ -15,7 +15,7 @@ const LeetcodeStats = dynamic(
 
 export function CodingActivitySection() {
     return (
-        <section className="container mx-auto py-24 px-4 relative z-10">
+        <section id="coding-activity" className="container mx-auto py-24 px-4 relative z-10">
             {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-blue-900/10 blur-[120px] rounded-full -z-10" />
 

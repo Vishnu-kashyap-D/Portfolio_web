@@ -81,6 +81,8 @@ export default function Navbar({
         { title: "Home", url: "/" },
         { title: "About", url: "#about" },
         { title: "Skills", url: "#skills" },
+        { title: "Game", url: "#web-swing" },
+        { title: "GitHub", url: "#coding-activity" },
         { title: "Projects", url: "#projects" },
         { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
