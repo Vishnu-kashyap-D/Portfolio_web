@@ -123,7 +123,7 @@ export default function Home() {
             <div className="lg:col-span-5 flex flex-col gap-8">
               <div className="relative w-[320px] md:w-[420px] mx-auto">
                 {/* Spider-Man perched in the corner */}
-                <div className="absolute -top-16 -left-10 md:-top-24 md:-left-16 w-28 md:w-44 z-20 pointer-events-none select-none drop-shadow-2xl">
+                <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 w-14 md:w-[5.5rem] z-20 pointer-events-none select-none drop-shadow-2xl">
                   <Image
                     src="/spiderman-corner.png"
                     alt="Spider-Man crouched in the corner, holding Captain America's shield"
