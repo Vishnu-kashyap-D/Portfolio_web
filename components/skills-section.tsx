@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import ShinyButton from "@/components/ui/shiny-button";
 import { SkillsTabs } from "@/components/ui/skills-tabs";
@@ -73,7 +74,18 @@ export function SkillsSection() {
 
     return (
         <section id="skills" className="container mx-auto py-24 px-4 relative z-10 min-h-[600px] flex flex-col justify-center">
-            <h2 className="text-3xl md:text-5xl font-bold mb-12 text-center md:text-left">Technical Arsenal</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-28 md:mb-36 text-center md:text-left">
+                Technical Arsena<span className="relative inline-block">l<span className="absolute left-1/2 top-full -translate-x-1/2 w-10 md:w-16 flex flex-col items-center pointer-events-none select-none z-20">
+                        <span className="w-px h-8 md:h-12 bg-gradient-to-b from-white/50 to-white/10" />
+                        <Image
+                            src="/spiderman-hanging.png"
+                            alt="Spider-Man hanging by a web from the last letter of Technical Arsenal"
+                            width={549}
+                            height={800}
+                            className="w-10 md:w-16 h-auto object-contain -mt-0.5 drop-shadow-xl"
+                        />
+                    </span></span>
+            </h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
