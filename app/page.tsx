@@ -121,14 +121,26 @@ export default function Home() {
 
             {/* Left: Formal Profile */}
             <div className="lg:col-span-5 flex flex-col gap-8">
-              <div className="relative w-[320px] md:w-[420px] mx-auto aspect-[3/4] rounded-2xl overflow-hidden bg-transparent">
-                <Image
-                  src="/profile.jpg"
-                  alt="Vishnu Formal"
-                  fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
-                />
+              <div className="relative w-[320px] md:w-[420px] mx-auto">
+                {/* Spider-Man perched in the corner */}
+                <div className="absolute -top-16 -left-10 md:-top-24 md:-left-16 w-28 md:w-44 z-20 pointer-events-none select-none drop-shadow-2xl">
+                  <Image
+                    src="/spiderman-corner.png"
+                    alt="Spider-Man crouched in the corner, holding Captain America's shield"
+                    width={529}
+                    height={588}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
 
+                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-transparent">
+                  <Image
+                    src="/profile.jpg"
+                    alt="Vishnu Formal"
+                    fill
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                </div>
               </div>
             </div>
 
