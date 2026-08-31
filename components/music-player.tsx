@@ -9,11 +9,41 @@ import { cn } from "@/lib/utils";
 import type { CurrentTrack } from "@/lib/lanyard";
 
 const POLL_INTERVAL_MS = 25_000;
+const LAST_TRACK_STORAGE_KEY = "lastPlayedTrack";
+
+// Lanyard has no "previously played" API — the last known track is
+// persisted client-side so the card can keep showing it (marked as no
+// longer live) across polls and page reloads instead of disappearing.
+function readStoredTrack(): CurrentTrack | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LAST_TRACK_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CurrentTrack;
+    if (!parsed?.title && !parsed?.trackId) return null;
+    return { ...parsed, isPlaying: false };
+  } catch {
+    return null;
+  }
+}
+
+function storeTrack(data: CurrentTrack) {
+  try {
+    window.localStorage.setItem(LAST_TRACK_STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // Storage unavailable (e.g. private browsing) — the card still works
+    // for the current page session, it just won't survive a reload.
+  }
+}
 
 export function MusicPlayer() {
   const [track, setTrack] = useState<CurrentTrack | null>(null);
   const [artFailed, setArtFailed] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    setTrack((prev) => prev ?? readStoredTrack());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,8 +56,12 @@ export function MusicPlayer() {
         const data: CurrentTrack = await res.json();
         if (cancelled) return;
         setTrack((prev) => {
-          if (!prev || prev.trackId !== data.trackId) setArtFailed(false);
-          return data;
+          if (data.isPlaying) {
+            if (!prev || prev.trackId !== data.trackId) setArtFailed(false);
+            storeTrack(data);
+            return data;
+          }
+          return prev ? { ...prev, isPlaying: false } : data;
         });
       } catch {
         // Network hiccup — keep the last known state and try again next tick.
@@ -59,10 +93,13 @@ export function MusicPlayer() {
     };
   }, []);
 
-  if (!track?.isPlaying) return null;
+  // Nothing has ever come back from Lanyard yet (no current or previous
+  // track to fall back to) — the only case where the card stays hidden.
+  if (!track || (!track.title && !track.trackId)) return null;
 
   const subtitle = track.album ? `${track.artist} · ${track.album}` : track.artist;
   const isLinkable = Boolean(track.spotifyUrl);
+  const statusLabel = track.isPlaying ? "Currently Playing" : "Last Played";
 
   // The whole card opens the track on Spotify when a real URL is available;
   // otherwise it's a plain, non-interactive status card (never a fake link).
@@ -76,7 +113,7 @@ export function MusicPlayer() {
       }
     : {
         role: "status",
-        "aria-label": "Currently playing on Spotify",
+        "aria-label": `${statusLabel} on Spotify`,
       };
 
   return (
@@ -118,12 +155,17 @@ export function MusicPlayer() {
             <span
               className={cn(
                 "absolute inline-flex h-full w-full rounded-full bg-primary/60",
-                !shouldReduceMotion && "animate-ping"
+                track.isPlaying && !shouldReduceMotion && "animate-ping"
               )}
             />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            <span
+              className={cn(
+                "relative inline-flex h-1.5 w-1.5 rounded-full",
+                track.isPlaying ? "bg-primary" : "bg-muted-foreground/50"
+              )}
+            />
           </span>
-          Currently Playing
+          {statusLabel}
         </div>
         <p className="truncate text-sm font-semibold text-foreground" title={track.title}>
           {track.title}
