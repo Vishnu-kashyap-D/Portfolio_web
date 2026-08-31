@@ -200,11 +200,11 @@ export default function Home() {
               className="absolute inset-0 h-full overflow-hidden isolate bg-background"
             >
               <div className="container mx-auto px-4 min-h-full flex items-center py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch w-full">
 
                   {/* Left: Formal Profile */}
-                  <div className="lg:col-span-5 flex flex-col gap-8">
-                    <div className="relative w-[320px] md:w-[420px] mx-auto mt-20 md:mt-28">
+                  <div className="lg:col-span-5 flex items-center justify-center">
+                    <div className="relative w-[320px] md:w-[420px] mt-8">
                       {/* Spider-Man perched in the corner */}
                       <div className="absolute bottom-full right-0 md:right-2 w-14 md:w-[5.5rem] z-20 pointer-events-none select-none drop-shadow-2xl">
                         <Image
