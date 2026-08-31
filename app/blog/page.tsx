@@ -3,6 +3,7 @@ import Navbar from "@/components/ui/navbar";
 import { Footer } from "@/components/footer";
 import { BlogHero } from "@/components/blog/blog-hero";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
+import { BlogLearningTabs } from "@/components/learning/blog-learning-tabs";
 import { getAllCategories, getAllPosts, getFeaturedPost, toSummary } from "@/lib/blog";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
@@ -38,7 +39,12 @@ export default function BlogPage() {
       <Navbar />
       <main>
         <BlogHero />
-        <BlogExplorer posts={posts} categories={categories} featuredPost={featuredSummary} />
+        <div className="container mx-auto px-4">
+          <BlogLearningTabs active="articles" />
+        </div>
+        <div className="mt-8">
+          <BlogExplorer posts={posts} categories={categories} featuredPost={featuredSummary} />
+        </div>
         <div className="h-24" />
       </main>
       <Footer />

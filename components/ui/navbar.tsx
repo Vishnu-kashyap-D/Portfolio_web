@@ -108,6 +108,11 @@ export default function Navbar({
         router.push("/blog");
     };
 
+    const goToLearning = () => {
+        setOpenSearch(false);
+        router.push("/blog/learning");
+    };
+
     const isItemActive = (url: string) => {
         if (url === "/") return pathname === "/";
         if (url === "/blog") return pathname === "/blog" || pathname.startsWith("/blog/");
@@ -235,6 +240,7 @@ export default function Navbar({
                         <CommandItem onSelect={() => goToSection("skills")}>Computer Vision</CommandItem>
                         <CommandItem onSelect={() => goToSection("projects")}>Projects</CommandItem>
                         <CommandItem onSelect={goToBlog}>Blog</CommandItem>
+                        <CommandItem onSelect={goToLearning}>Certifications &amp; Learning</CommandItem>
                         <CommandItem onSelect={() => goToSection("contact")}>Contact</CommandItem>
                     </CommandGroup>
                 </CommandList>
