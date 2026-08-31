@@ -67,33 +67,32 @@ export default function Home() {
   const smoothProgress = useSpring(flipProgress, { stiffness: 260, damping: 38, mass: 0.4 });
 
   // A deck of 5 panels (Home, About, Skills, Game, Coding Activity) stacked on
-  // top of each other. Each of the first 4 flips away 180deg in its own 1/4
-  // slice of the scroll range, revealing the panel resting underneath it.
-  // Opacity snaps to 0 right past each panel's own 90deg point as a hard
-  // guarantee it disappears — Chromium doesn't reliably honor backface-
-  // visibility here for these independently-rotating flat siblings. The snap
-  // window is kept extremely tight (not a true instant step) purely so it
-  // can't land exactly between two rendered frames; with rotateX now driven
-  // by the spring above, consecutive frames are already close together, so a
-  // wide crossfade isn't needed — one caused a visible double-exposure with
-  // the panel underneath during testing.
+  // top of each other. Each of the first 4 rotates 180deg AND fades from
+  // opaque to transparent across its own 1/4 slice of the scroll range —
+  // opacity and rotation share the same input range, so the panel underneath
+  // (always fully opaque itself) is gradually revealed as the one on top
+  // both spins and fades in lockstep, rather than popping in once the top
+  // one crosses some fixed threshold. Before a panel's own segment starts,
+  // useTransform's default clamping holds it at full opacity (still hidden
+  // behind whatever is above it); after its segment ends, it's clamped to 0,
+  // which also guarantees it disappears even where Chromium doesn't reliably
+  // honor backface-visibility on these independently-rotating flat siblings.
   const homeRotateX = useTransform(smoothProgress, [0, 0.25], [0, -180]);
-  const homeVisible = useTransform(smoothProgress, [0, 0.123, 0.127, 1], [1, 1, 0, 0]);
+  const homeVisible = useTransform(smoothProgress, [0, 0.25], [1, 0]);
   const homePointerEvents = useTransform(smoothProgress, (v) => (v < 0.125 ? "auto" : "none"));
 
   const aboutRotateX = useTransform(smoothProgress, [0.25, 0.5], [0, -180]);
-  const aboutVisible = useTransform(smoothProgress, [0, 0.123, 0.127, 0.373, 0.377, 1], [0, 0, 1, 1, 0, 0]);
+  const aboutVisible = useTransform(smoothProgress, [0.25, 0.5], [1, 0]);
   const aboutPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.125 && v < 0.375 ? "auto" : "none"));
 
   const skillsRotateX = useTransform(smoothProgress, [0.5, 0.75], [0, -180]);
-  const skillsVisible = useTransform(smoothProgress, [0, 0.373, 0.377, 0.623, 0.627, 1], [0, 0, 1, 1, 0, 0]);
+  const skillsVisible = useTransform(smoothProgress, [0.5, 0.75], [1, 0]);
   const skillsPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.375 && v < 0.625 ? "auto" : "none"));
 
   const gameRotateX = useTransform(smoothProgress, [0.75, 1], [0, -180]);
-  const gameVisible = useTransform(smoothProgress, [0, 0.623, 0.627, 0.873, 0.877, 1], [0, 0, 1, 1, 0, 0]);
+  const gameVisible = useTransform(smoothProgress, [0.75, 1], [1, 0]);
   const gamePointerEvents = useTransform(smoothProgress, (v) => (v >= 0.625 && v < 0.875 ? "auto" : "none"));
 
-  const codingActivityVisible = useTransform(smoothProgress, [0, 0.873, 0.877, 1], [0, 0, 1, 1]);
   const codingActivityPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.875 ? "auto" : "none"));
 
   // A subtle shadow pulse at the midpoint of whichever flip is currently in progress.
@@ -140,7 +139,7 @@ export default function Home() {
 
             {/* Panel 5 (resting base): Coding Activity */}
             <motion.div
-              style={{ zIndex: 10, opacity: codingActivityVisible, pointerEvents: codingActivityPointerEvents }}
+              style={{ zIndex: 10, pointerEvents: codingActivityPointerEvents }}
               className="absolute inset-0 h-full overflow-hidden isolate bg-background"
             >
               {codingActivityReady && <CodingActivitySection />}
