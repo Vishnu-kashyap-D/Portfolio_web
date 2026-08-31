@@ -79,7 +79,7 @@ export default function Navbar({
     },
     menu = [
         { title: "Home", url: "/" },
-        { title: "About", url: "#about" },
+        { title: "About", url: "#about-anchor" },
         { title: "Skills", url: "#skills" },
         { title: "Game", url: "#web-swing" },
         { title: "GitHub", url: "#coding-activity" },
