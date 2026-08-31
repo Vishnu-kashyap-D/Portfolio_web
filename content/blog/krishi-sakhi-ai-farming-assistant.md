@@ -10,6 +10,9 @@ coverImage: "/projects/krishi-sakhi-homepage.png"
 published: true
 technologies: ["Python", "Speech Recognition", "NLP"]
 githubUrl: "https://github.com/Vishnu-kashyap-D/sih25074"
+stats:
+  - value: ">95%"
+    label: "ASR Accuracy"
 ---
 
 > **Sample post.** This documents Krishi Sakhi, a real project from this portfolio, written as a case study for the blog. Extend it with implementation detail whenever you're ready.

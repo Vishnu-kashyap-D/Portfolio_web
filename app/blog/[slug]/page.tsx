@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button";
 import { BackToBlog } from "@/components/blog/back-to-blog";
 import { CategoryBadge } from "@/components/blog/category-badge";
 import { ArticleContent } from "@/components/blog/article-content";
+import { ReportStats } from "@/components/blog/report-stats";
+import { ReportToc } from "@/components/blog/report-toc";
 import { ShareMenu } from "@/components/blog/share-menu";
 import { PrevNextNav } from "@/components/blog/prev-next-nav";
 import { RelatedPosts } from "@/components/blog/related-posts";
-import { formatDate } from "@/lib/blog-format";
+import { extractHeadings, formatDate } from "@/lib/blog-format";
 import { getAdjacentPosts, getAllPosts, getPostBySlug, getRelatedPosts, toSummary } from "@/lib/blog";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, FileText } from "lucide-react";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -91,6 +93,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   };
 
   const badges = post.technologies?.length ? post.technologies : post.tags;
+  const isReport = post.category === "Projects";
+  const headings = isReport ? extractHeadings(post.content) : [];
 
   return (
     <div className="relative min-h-screen font-sans text-foreground">
@@ -109,6 +113,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <BackToBlog className="mb-8" />
 
           <header className="mx-auto max-w-3xl">
+            {isReport && (
+              <span className="mb-3 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                <FileText className="h-3.5 w-3.5" /> Technical Report
+              </span>
+            )}
             <CategoryBadge category={post.category} />
             <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl text-balance">
               {post.title}
@@ -121,6 +130,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <span aria-hidden>·</span>
               <span>{post.readingTime}</span>
             </div>
+            {post.stats && post.stats.length > 0 && <ReportStats stats={post.stats} />}
           </header>
 
           <div className="relative mx-auto mt-10 aspect-video w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-muted">
@@ -134,8 +144,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             />
           </div>
 
+          {isReport && (
+            <div className="mx-auto max-w-3xl">
+              <ReportToc headings={headings} />
+            </div>
+          )}
+
           <div className="mx-auto mt-12 max-w-3xl">
-            <ArticleContent content={post.content} />
+            <ArticleContent content={post.content} numbered={isReport} />
 
             {badges && badges.length > 0 && (
               <div className="mt-10 flex flex-wrap gap-2 border-t border-border pt-8">
@@ -150,7 +166,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </div>
             )}
 
-            {(post.githubUrl || post.liveUrl) && (
+            {(post.githubUrl || post.liveUrl || post.reportUrl) && (
               <div className="mt-6 flex flex-wrap gap-3">
                 {post.githubUrl && (
                   <Button asChild variant="outline" size="sm">
@@ -163,6 +179,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   <Button asChild variant="outline" size="sm">
                     <a href={post.liveUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink /> Live Demo
+                    </a>
+                  </Button>
+                )}
+                {post.reportUrl && (
+                  <Button asChild variant="outline" size="sm">
+                    <a href={post.reportUrl} target="_blank" rel="noopener noreferrer">
+                      <FileText /> View
                     </a>
                   </Button>
                 )}

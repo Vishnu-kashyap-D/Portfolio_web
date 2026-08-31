@@ -10,6 +10,12 @@ coverImage: "/projects/safe-vision-demo.png"
 published: true
 technologies: ["Python", "OpenCV", "YOLO", "Blockchain"]
 githubUrl: "https://github.com/UmashankarGouda/SafeVision"
+reportUrl: "/reports/SafeVision_Technical_Report.pdf"
+stats:
+  - value: "92%"
+    label: "Detection Accuracy"
+  - value: "Real-Time"
+    label: "Processing"
 ---
 
 > **Sample post.** This write-up documents Safe Vision, a real project listed on this portfolio, formatted as a case study. Swap in more detail from the actual build whenever you want to expand it.
