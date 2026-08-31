@@ -10,6 +10,7 @@ import { ProjectsGrid } from "@/components/projects-grid";
 import { SkillsSection } from "@/components/skills-section";
 import { CodingActivitySection } from "@/components/coding-activity-section";
 import { ContactSection } from "@/components/contact-section";
+import { MusicPlayer } from "@/components/music-player";
 import Image from "next/image";
 import { Github, Linkedin, Instagram, Mail, Twitter } from "lucide-react";
 
@@ -185,6 +186,7 @@ export default function Home() {
 
       </main>
       <Footer />
+      <MusicPlayer />
     </div>
   );
 }
