@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "motion/react";
 import Navbar from "@/components/ui/navbar";
 import { Footer } from "@/components/footer";
 import AnoAI from "@/components/ui/animated-shader-background";
@@ -81,6 +81,7 @@ export default function Home() {
   const gameVisible = useTransform(flipProgress, (v) => (v >= 0.625 && v < 0.875 ? 1 : 0));
   const gamePointerEvents = useTransform(flipProgress, (v) => (v >= 0.625 && v < 0.875 ? "auto" : "none"));
 
+  const codingActivityVisible = useTransform(flipProgress, (v) => (v >= 0.875 ? 1 : 0));
   const codingActivityPointerEvents = useTransform(flipProgress, (v) => (v >= 0.875 ? "auto" : "none"));
 
   // A subtle shadow pulse at the midpoint of whichever flip is currently in progress.
@@ -89,6 +90,19 @@ export default function Home() {
     const seg = Math.min(Math.floor(clamped * 4), 3);
     const local = clamped * 4 - seg;
     return (1 - Math.abs(local - 0.5) * 2) * 0.5;
+  });
+
+  // Skills, the game, and Coding Activity all run their own animation loops
+  // (orbiting icons, a canvas game loop) once mounted. Lazy-mount them only as
+  // the user scrolls near their panel instead of the moment the page loads,
+  // so those loops aren't competing with the flip animation the whole time.
+  const [skillsReady, setSkillsReady] = useState(false);
+  const [gameReady, setGameReady] = useState(false);
+  const [codingActivityReady, setCodingActivityReady] = useState(false);
+  useMotionValueEvent(flipProgress, "change", (v) => {
+    if (!skillsReady && v > 0.25) setSkillsReady(true);
+    if (!gameReady && v > 0.5) setGameReady(true);
+    if (!codingActivityReady && v > 0.75) setCodingActivityReady(true);
   });
 
   return (
@@ -114,10 +128,10 @@ export default function Home() {
 
             {/* Panel 5 (resting base): Coding Activity */}
             <motion.div
-              style={{ zIndex: 10, pointerEvents: codingActivityPointerEvents }}
-              className="absolute inset-0 h-full overflow-hidden isolate"
+              style={{ zIndex: 10, opacity: codingActivityVisible, pointerEvents: codingActivityPointerEvents }}
+              className="absolute inset-0 h-full overflow-hidden isolate bg-background"
             >
-              <CodingActivitySection />
+              {codingActivityReady && <CodingActivitySection />}
             </motion.div>
 
             {/* Panel 4: Mini Game, flips away to reveal Coding Activity */}
@@ -140,7 +154,7 @@ export default function Home() {
                     Swing through the skyline — click/tap to shoot a web, click again to let go.
                   </p>
                 </div>
-                <WebSwingGame />
+                {gameReady && <WebSwingGame />}
               </section>
             </motion.div>
 
@@ -157,7 +171,7 @@ export default function Home() {
               }}
               className="absolute inset-0 h-full overflow-hidden isolate bg-background"
             >
-              <SkillsSection />
+              {skillsReady && <SkillsSection />}
             </motion.div>
 
             {/* Panel 2: About, flips away to reveal Skills */}
