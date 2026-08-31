@@ -79,10 +79,10 @@ export default function Navbar({
     },
     menu = [
         { title: "Home", url: "/" },
-        { title: "About", url: "#about-anchor" },
-        { title: "Skills", url: "#skills-anchor" },
-        { title: "Game", url: "#web-swing-anchor" },
-        { title: "GitHub", url: "#coding-activity-anchor" },
+        { title: "About", url: "#about" },
+        { title: "Skills", url: "#skills" },
+        { title: "Game", url: "#web-swing" },
+        { title: "GitHub", url: "#coding-activity" },
         { title: "Projects", url: "#projects" },
         { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
@@ -106,7 +106,7 @@ export default function Navbar({
     };
 
     return (
-        <section className="py-4 fixed top-0 w-full z-50 bg-background border-b border-border/40">
+        <section className="py-4 fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
             <div className="container mx-auto px-4">
                 {/* Desktop Navbar */}
                 <nav className="hidden justify-between lg:flex items-center">
@@ -211,8 +211,8 @@ export default function Navbar({
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup className="text-gray-500" heading="Suggestions">
-                        <CommandItem onSelect={() => goToSection("skills-anchor")}>Deep Learning</CommandItem>
-                        <CommandItem onSelect={() => goToSection("skills-anchor")}>Computer Vision</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills")}>Deep Learning</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills")}>Computer Vision</CommandItem>
                         <CommandItem onSelect={() => goToSection("projects")}>Projects</CommandItem>
                         <CommandItem onSelect={() => goToSection("contact")}>Contact</CommandItem>
                     </CommandGroup>
