@@ -80,9 +80,9 @@ export default function Navbar({
     menu = [
         { title: "Home", url: "/" },
         { title: "About", url: "#about-anchor" },
-        { title: "Skills", url: "#skills" },
-        { title: "Game", url: "#web-swing" },
-        { title: "GitHub", url: "#coding-activity" },
+        { title: "Skills", url: "#skills-anchor" },
+        { title: "Game", url: "#web-swing-anchor" },
+        { title: "GitHub", url: "#coding-activity-anchor" },
         { title: "Projects", url: "#projects" },
         { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
@@ -211,8 +211,8 @@ export default function Navbar({
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup className="text-gray-500" heading="Suggestions">
-                        <CommandItem onSelect={() => goToSection("skills")}>Deep Learning</CommandItem>
-                        <CommandItem onSelect={() => goToSection("skills")}>Computer Vision</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills-anchor")}>Deep Learning</CommandItem>
+                        <CommandItem onSelect={() => goToSection("skills-anchor")}>Computer Vision</CommandItem>
                         <CommandItem onSelect={() => goToSection("projects")}>Projects</CommandItem>
                         <CommandItem onSelect={() => goToSection("contact")}>Contact</CommandItem>
                     </CommandGroup>
