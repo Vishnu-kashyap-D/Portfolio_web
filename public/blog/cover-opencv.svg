@@ -1,0 +1,19 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#1a1024"/>
+    </linearGradient>
+    <pattern id="grid2" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg2)"/>
+  <rect width="1200" height="630" fill="url(#grid2)"/>
+  <circle cx="980" cy="150" r="260" fill="#a855f7" opacity="0.16"/>
+  <circle cx="160" cy="500" r="200" fill="#22d3ee" opacity="0.10"/>
+  <rect x="720" y="220" width="200" height="150" rx="12" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.5"/>
+  <circle cx="820" cy="295" r="34" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.6"/>
+  <text x="80" y="430" font-family="sans-serif" font-size="46" font-weight="700" fill="#ffffff">OpenCV for Real-Time Vision</text>
+  <text x="80" y="470" font-family="sans-serif" font-size="20" fill="#a3a3a3">Computer vision, from first principles</text>
+</svg>

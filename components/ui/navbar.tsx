@@ -3,6 +3,8 @@
 import { Book, Menu, ShoppingCart, Search, Palette, GraduationCap, History, Users, LayoutDashboard, Sparkles, Boxes, Sun, Moon } from "lucide-react";
 import * as React from "react";
 import { useTheme } from "next-themes"
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 import {
     Accordion,
@@ -79,11 +81,12 @@ export default function Navbar({
     },
     menu = [
         { title: "Home", url: "/" },
-        { title: "About", url: "#about" },
-        { title: "Skills", url: "#skills" },
-        { title: "Game", url: "#web-swing" },
-        { title: "GitHub", url: "#coding-activity" },
-        { title: "Projects", url: "#projects" },
+        { title: "About", url: "/#about" },
+        { title: "Skills", url: "/#skills" },
+        { title: "Game", url: "/#web-swing" },
+        { title: "GitHub", url: "/#coding-activity" },
+        { title: "Projects", url: "/#projects" },
+        { title: "Blog", url: "/blog" },
         { title: "Resume", url: "/Vishnu_Kashyap_Resume.pdf" },
     ],
     mobileExtraLinks = [
@@ -91,16 +94,33 @@ export default function Navbar({
         { name: "GitHub", url: "https://github.com/Vishnu-kashyap-D" },
     ],
     auth = {
-        login: { text: "Contact Me", url: "#contact" },
+        login: { text: "Contact Me", url: "/#contact" },
         signup: { text: "Download CV", url: "/Vishnu_Kashyap_Resume.pdf" },
     },
 }: NavbarProps) {
     const [openSearch, setOpenSearch] = React.useState(false);
     const { setTheme, theme } = useTheme();
+    const pathname = usePathname();
+    const router = useRouter();
+
+    const goToBlog = () => {
+        setOpenSearch(false);
+        router.push("/blog");
+    };
+
+    const isItemActive = (url: string) => {
+        if (url === "/") return pathname === "/";
+        if (url === "/blog") return pathname === "/blog" || pathname.startsWith("/blog/");
+        return false;
+    };
 
     const goToSection = (id: string) => {
         setOpenSearch(false);
         setTimeout(() => {
+            if (pathname !== "/") {
+                window.location.href = `/#${id}`;
+                return;
+            }
             document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
         }, 150);
     };
@@ -117,7 +137,7 @@ export default function Navbar({
                         <div className="flex items-center">
                             <NavigationMenu className="[&_[data-radix-navigation-menu-viewport]]:rounded-3xl">
                                 <NavigationMenuList className="rounded-3xl">
-                                    {menu.map((item) => renderMenuItem(item))}
+                                    {menu.map((item) => renderMenuItem(item, isItemActive(item.url)))}
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </div>
@@ -172,7 +192,7 @@ export default function Navbar({
                                     </SheetHeader>
                                     <div className="my-6 flex flex-col gap-6">
                                         <Accordion type="single" collapsible className="flex w-full flex-col gap-4">
-                                            {menu.map((item) => renderMobileMenuItem(item))}
+                                            {menu.map((item) => renderMobileMenuItem(item, isItemActive(item.url)))}
                                         </Accordion>
                                         <div className="border-t border-gray-200 dark:border-gray-700 py-4">
                                             <div className="grid grid-cols-2 justify-start">
@@ -214,6 +234,7 @@ export default function Navbar({
                         <CommandItem onSelect={() => goToSection("skills")}>Deep Learning</CommandItem>
                         <CommandItem onSelect={() => goToSection("skills")}>Computer Vision</CommandItem>
                         <CommandItem onSelect={() => goToSection("projects")}>Projects</CommandItem>
+                        <CommandItem onSelect={goToBlog}>Blog</CommandItem>
                         <CommandItem onSelect={() => goToSection("contact")}>Contact</CommandItem>
                     </CommandGroup>
                 </CommandList>
@@ -222,7 +243,7 @@ export default function Navbar({
     );
 }
 
-const renderMenuItem = (item: MenuItem) => {
+const renderMenuItem = (item: MenuItem, active = false) => {
     if (item.items) {
         return (
             <NavigationMenuItem key={item.title} className="text-muted-foreground !rounded-3xl">
@@ -258,15 +279,19 @@ const renderMenuItem = (item: MenuItem) => {
     return (
         <a
             key={item.title}
-            className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground"
+            className={cn(
+                "group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground",
+                active && "bg-muted text-foreground"
+            )}
             href={item.url}
+            aria-current={active ? "page" : undefined}
         >
             {item.title}
         </a>
     );
 };
 
-const renderMobileMenuItem = (item: MenuItem) => {
+const renderMobileMenuItem = (item: MenuItem, active = false) => {
     if (item.items) {
         return (
             <AccordionItem key={item.title} value={item.title} className="border-b-0">
@@ -297,7 +322,12 @@ const renderMobileMenuItem = (item: MenuItem) => {
     }
 
     return (
-        <a key={item.title} href={item.url} className="font-semibold">
+        <a
+            key={item.title}
+            href={item.url}
+            className={cn("font-semibold", active && "text-primary")}
+            aria-current={active ? "page" : undefined}
+        >
             {item.title}
         </a>
     );
