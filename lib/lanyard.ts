@@ -48,9 +48,11 @@ function devWarn(message: string) {
 }
 
 export async function getCurrentlyPlaying(): Promise<CurrentTrack> {
-  const userId = process.env.DISCORD_USER_ID;
+  // VITE_LANYARD_ID is the name already configured in Vercel; DISCORD_USER_ID
+  // is kept as a fallback for local dev / the documented .env.example name.
+  const userId = process.env.VITE_LANYARD_ID || process.env.DISCORD_USER_ID;
   if (!userId) {
-    devWarn("DISCORD_USER_ID is not configured — set it in .env.local (see .env.example).");
+    devWarn("VITE_LANYARD_ID (or DISCORD_USER_ID) is not configured — set it in .env.local (see .env.example).");
     return EMPTY_TRACK;
   }
 

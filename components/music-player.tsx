@@ -62,11 +62,26 @@ export function MusicPlayer() {
   if (!track?.isPlaying) return null;
 
   const subtitle = track.album ? `${track.artist} · ${track.album}` : track.artist;
+  const isLinkable = Boolean(track.spotifyUrl);
+
+  // The whole card opens the track on Spotify when a real URL is available;
+  // otherwise it's a plain, non-interactive status card (never a fake link).
+  const Wrapper = isLinkable ? motion.a : motion.div;
+  const wrapperProps = isLinkable
+    ? {
+        href: track.spotifyUrl,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        "aria-label": `Open ${track.title} by ${track.artist} on Spotify`,
+      }
+    : {
+        role: "status",
+        "aria-label": "Currently playing on Spotify",
+      };
 
   return (
-    <motion.div
-      role="status"
-      aria-label="Currently playing on Spotify"
+    <Wrapper
+      {...wrapperProps}
       initial={shouldReduceMotion ? undefined : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
@@ -75,6 +90,7 @@ export function MusicPlayer() {
         "border border-white/15 bg-background/70 backdrop-blur-xl backdrop-saturate-150",
         "shadow-lg shadow-black/10 dark:shadow-black/40",
         "transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-xl",
+        isLinkable && "outline-none focus-visible:ring-2 focus-visible:ring-[#1DB954]/50",
         "bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3",
         "sm:right-auto sm:left-6 sm:bottom-6 sm:w-[320px]"
       )}
@@ -117,21 +133,12 @@ export function MusicPlayer() {
         </p>
       </div>
 
-      {track.spotifyUrl ? (
-        <a
-          href={track.spotifyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Open ${track.title} by ${track.artist} on Spotify`}
-          className="shrink-0 rounded-full p-2 text-[#1DB954] outline-none transition-colors hover:bg-[#1DB954]/10 focus-visible:ring-2 focus-visible:ring-[#1DB954]/50"
-        >
-          <SiSpotify className="h-4 w-4" />
-        </a>
-      ) : (
-        <span className="shrink-0 p-2 text-[#1DB954]/70" aria-hidden="true">
-          <SiSpotify className="h-4 w-4" />
-        </span>
-      )}
-    </motion.div>
+      <span
+        className={cn("shrink-0 p-2 text-[#1DB954]", !isLinkable && "text-[#1DB954]/70")}
+        aria-hidden="true"
+      >
+        <SiSpotify className="h-4 w-4" />
+      </span>
+    </Wrapper>
   );
 }
