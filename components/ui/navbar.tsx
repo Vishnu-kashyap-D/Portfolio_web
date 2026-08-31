@@ -106,7 +106,7 @@ export default function Navbar({
     };
 
     return (
-        <section className="py-4 fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
+        <section className="py-4 fixed top-0 w-full z-50 bg-background border-b border-border/40">
             <div className="container mx-auto px-4">
                 {/* Desktop Navbar */}
                 <nav className="hidden justify-between lg:flex items-center">

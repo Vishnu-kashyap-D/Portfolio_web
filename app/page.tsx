@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "motion/react";
+import { motion, useScroll, useSpring, useTransform, useMotionValueEvent } from "motion/react";
 import Navbar from "@/components/ui/navbar";
 import { Footer } from "@/components/footer";
 import AnoAI from "@/components/ui/animated-shader-background";
@@ -59,33 +59,45 @@ export default function Home() {
     offset: ["start start", "end end"],
   });
 
+  // Raw scroll progress jumps around with real trackpad/wheel input — a fast
+  // flick can advance it most of the way in a couple of frames, which made a
+  // 180deg flip look like an abrupt cut instead of an actual rotation. Spring
+  // smoothing decouples the visual motion from that jitter so the flip always
+  // plays out fluidly regardless of how fast or unevenly the user scrolls.
+  const smoothProgress = useSpring(flipProgress, { stiffness: 260, damping: 38, mass: 0.4 });
+
   // A deck of 5 panels (Home, About, Skills, Game, Coding Activity) stacked on
   // top of each other. Each of the first 4 flips away 180deg in its own 1/4
   // slice of the scroll range, revealing the panel resting underneath it.
-  // Opacity is snapped to 0 past each panel's own 90deg point as a hard guarantee
-  // it disappears — Chromium doesn't reliably honor backface-visibility here for
-  // these independently-rotating flat siblings.
-  const homeRotateX = useTransform(flipProgress, [0, 0.25], [0, -180]);
-  const homeVisible = useTransform(flipProgress, (v) => (v < 0.125 ? 1 : 0));
-  const homePointerEvents = useTransform(flipProgress, (v) => (v < 0.125 ? "auto" : "none"));
+  // Opacity snaps to 0 right past each panel's own 90deg point as a hard
+  // guarantee it disappears — Chromium doesn't reliably honor backface-
+  // visibility here for these independently-rotating flat siblings. The snap
+  // window is kept extremely tight (not a true instant step) purely so it
+  // can't land exactly between two rendered frames; with rotateX now driven
+  // by the spring above, consecutive frames are already close together, so a
+  // wide crossfade isn't needed — one caused a visible double-exposure with
+  // the panel underneath during testing.
+  const homeRotateX = useTransform(smoothProgress, [0, 0.25], [0, -180]);
+  const homeVisible = useTransform(smoothProgress, [0, 0.123, 0.127, 1], [1, 1, 0, 0]);
+  const homePointerEvents = useTransform(smoothProgress, (v) => (v < 0.125 ? "auto" : "none"));
 
-  const aboutRotateX = useTransform(flipProgress, [0.25, 0.5], [0, -180]);
-  const aboutVisible = useTransform(flipProgress, (v) => (v >= 0.125 && v < 0.375 ? 1 : 0));
-  const aboutPointerEvents = useTransform(flipProgress, (v) => (v >= 0.125 && v < 0.375 ? "auto" : "none"));
+  const aboutRotateX = useTransform(smoothProgress, [0.25, 0.5], [0, -180]);
+  const aboutVisible = useTransform(smoothProgress, [0, 0.123, 0.127, 0.373, 0.377, 1], [0, 0, 1, 1, 0, 0]);
+  const aboutPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.125 && v < 0.375 ? "auto" : "none"));
 
-  const skillsRotateX = useTransform(flipProgress, [0.5, 0.75], [0, -180]);
-  const skillsVisible = useTransform(flipProgress, (v) => (v >= 0.375 && v < 0.625 ? 1 : 0));
-  const skillsPointerEvents = useTransform(flipProgress, (v) => (v >= 0.375 && v < 0.625 ? "auto" : "none"));
+  const skillsRotateX = useTransform(smoothProgress, [0.5, 0.75], [0, -180]);
+  const skillsVisible = useTransform(smoothProgress, [0, 0.373, 0.377, 0.623, 0.627, 1], [0, 0, 1, 1, 0, 0]);
+  const skillsPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.375 && v < 0.625 ? "auto" : "none"));
 
-  const gameRotateX = useTransform(flipProgress, [0.75, 1], [0, -180]);
-  const gameVisible = useTransform(flipProgress, (v) => (v >= 0.625 && v < 0.875 ? 1 : 0));
-  const gamePointerEvents = useTransform(flipProgress, (v) => (v >= 0.625 && v < 0.875 ? "auto" : "none"));
+  const gameRotateX = useTransform(smoothProgress, [0.75, 1], [0, -180]);
+  const gameVisible = useTransform(smoothProgress, [0, 0.623, 0.627, 0.873, 0.877, 1], [0, 0, 1, 1, 0, 0]);
+  const gamePointerEvents = useTransform(smoothProgress, (v) => (v >= 0.625 && v < 0.875 ? "auto" : "none"));
 
-  const codingActivityVisible = useTransform(flipProgress, (v) => (v >= 0.875 ? 1 : 0));
-  const codingActivityPointerEvents = useTransform(flipProgress, (v) => (v >= 0.875 ? "auto" : "none"));
+  const codingActivityVisible = useTransform(smoothProgress, [0, 0.873, 0.877, 1], [0, 0, 1, 1]);
+  const codingActivityPointerEvents = useTransform(smoothProgress, (v) => (v >= 0.875 ? "auto" : "none"));
 
   // A subtle shadow pulse at the midpoint of whichever flip is currently in progress.
-  const hingeShadowOpacity = useTransform(flipProgress, (p) => {
+  const hingeShadowOpacity = useTransform(smoothProgress, (p) => {
     const clamped = Math.min(Math.max(p, 0), 1);
     const seg = Math.min(Math.floor(clamped * 4), 3);
     const local = clamped * 4 - seg;
