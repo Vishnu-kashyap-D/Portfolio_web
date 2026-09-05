@@ -71,16 +71,12 @@ export function MusicPlayer() {
             storeTrack(data);
             return data;
           }
-          if (data.discordOnline) {
-            // Discord is open but nothing is playing — show the last known
-            // track (from this session or a previous one) marked as no
-            // longer live.
-            const base = prev ?? readStoredTrack();
-            return base ? { ...base, isPlaying: false } : null;
-          }
-          // Discord is closed/unreachable — never surface stale Discord
-          // data; the card falls back to its own independent default.
-          return null;
+          // Nothing is currently playing (Discord paused, closed, or
+          // unreachable) — show the last known track (from this session or
+          // a previous one) marked as no longer live, instead of the
+          // generic default.
+          const base = prev ?? readStoredTrack();
+          return base ? { ...base, isPlaying: false } : null;
         });
       } catch {
         // Network hiccup — keep the last known state and try again next tick.
