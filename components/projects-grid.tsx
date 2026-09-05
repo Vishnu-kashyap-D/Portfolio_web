@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Shield, Music, Sprout, Scan, Trophy, ArrowUpRight, ArrowRight, Database } from "lucide-react";
+import { Shield, Music, Sprout, Scan, Trophy, ArrowUpRight, ArrowRight, Database, Bot, Github, ExternalLink } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -49,6 +50,17 @@ export function ProjectsGrid() {
                     link="#"
                     image="/projects/crop-disease-leaf.jpg"
                     imageAlt="Close-up of a leaf showing visible disease spots, representative of the crop disease classification dataset"
+                />
+
+                {/* 5. PrepBot */}
+                <GridItem
+                    icon={<Bot className="h-4 w-4" />}
+                    title="PrepBot — Personal Placement Mentor"
+                    description="AI-powered placement prep chatbot covering HR interviews, resume building, aptitude & DSA rounds, and company-specific strategies."
+                    githubUrl="https://github.com/Vishnu-kashyap-D/PrepBot-Flinders"
+                    liveUrl="https://prep-bot-flinders.vercel.app/"
+                    image="/projects/prepbot-homepage.png"
+                    imageAlt="PrepBot landing page with the 'Crack Your Campus Placement with PrepBot' hero heading and Start Chatting button"
                 />
             </ul>
 
@@ -102,12 +114,18 @@ interface GridItemProps {
     title: string;
     description: React.ReactNode;
     link?: string;
+    githubUrl?: string;
+    liveUrl?: string;
     image?: string;
     imageAlt?: string;
 }
 
-const GridItem = ({ area, icon, title, description, link = "#", image, imageAlt }: GridItemProps) => {
-    const isLink = link !== "#";
+const GridItem = ({ area, icon, title, description, link = "#", githubUrl, liveUrl, image, imageAlt }: GridItemProps) => {
+    // Most cards are a single full-card link (matches every existing
+    // project). A card can opt into two separate actions instead by passing
+    // githubUrl/liveUrl — cards that don't pass them render exactly as before.
+    const hasDualActions = Boolean(githubUrl || liveUrl);
+    const isLink = !hasDualActions && link !== "#";
     const Content = (
         <>
             <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-border p-2 md:rounded-[1.5rem] md:p-3">
@@ -145,6 +163,24 @@ const GridItem = ({ area, icon, title, description, link = "#", image, imageAlt 
                             <h2 className="[&_b]:md:font-semibold [&_strong]:md:font-semibold font-sans text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-muted-foreground">
                                 {description}
                             </h2>
+                            {hasDualActions && (
+                                <div className="flex flex-wrap gap-2 pt-1">
+                                    {githubUrl && (
+                                        <Button asChild variant="outline" size="sm">
+                                            <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+                                                <Github /> GitHub
+                                            </a>
+                                        </Button>
+                                    )}
+                                    {liveUrl && (
+                                        <Button asChild variant="outline" size="sm">
+                                            <a href={liveUrl} target="_blank" rel="noopener noreferrer">
+                                                <ExternalLink /> Live Demo
+                                            </a>
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -158,6 +194,8 @@ const GridItem = ({ area, icon, title, description, link = "#", image, imageAlt 
                 <Link href={link} target="_blank" rel="noopener noreferrer" className="block h-full cursor-pointer">
                     {Content}
                 </Link>
+            ) : hasDualActions ? (
+                <div className="h-full">{Content}</div>
             ) : (
                 <div className="h-full select-none cursor-default">{Content}</div>
             )}
