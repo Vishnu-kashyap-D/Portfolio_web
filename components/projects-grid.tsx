@@ -62,13 +62,9 @@ export function ProjectsGrid() {
                     image="/projects/prepbot-homepage.png"
                     imageAlt="PrepBot landing page with the 'Crack Your Campus Placement with PrepBot' hero heading and Start Chatting button"
                 />
-            </ul>
 
-            {/* Remaining projects */}
-            <ul className="grid grid-cols-1 gap-4 md:grid-cols-12">
-                {/* 5. Cricket Turf/Pitch Booking Website */}
+                {/* 6. Cricket Turf/Pitch Booking Website */}
                 <GridItem
-                    area="md:col-span-6"
                     icon={<Database className="h-4 w-4" />}
                     title="Cricket Turf Booking"
                     description="Full-stack booking system with DBMS for real-time turf slot reservations and user management."
@@ -77,16 +73,18 @@ export function ProjectsGrid() {
                     imageAlt="Cricket Turf Booking homepage with a hero banner and a Book Now call to action"
                 />
 
-                {/* 6. Nutritional Suggestion Website */}
+                {/* 7. Nutritional Suggestion Website */}
                 <GridItem
-                    area="md:col-span-6"
                     icon={<Sprout className="h-4 w-4" />}
                     title="Nutritional Suggestion App"
                     description="Responsive web app generating personalized diet plans based on BMI and user metrics."
                     link="#"
                 />
+            </ul>
 
-                {/* 7. More Projects */}
+            {/* Remaining projects */}
+            <ul className="grid grid-cols-1 gap-4 md:grid-cols-12">
+                {/* 8. More Projects */}
                 <GridItem
                     area="md:col-span-12"
                     icon={<ArrowRight className="h-4 w-4" />}
@@ -95,7 +93,7 @@ export function ProjectsGrid() {
                     link="https://github.com/Vishnu-kashyap-D"
                 />
 
-                {/* 8. Key Achievements */}
+                {/* 9. Key Achievements */}
                 <GridItem
                     area="md:col-span-12"
                     icon={<Trophy className="h-4 w-4" />}
