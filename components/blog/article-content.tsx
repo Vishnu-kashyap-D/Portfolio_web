@@ -1,10 +1,20 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CodeBlock } from "@/components/blog/code-block";
 import { extractHeadings, slugify } from "@/lib/blog-format";
+
+function ArticleImage({ src, alt }: { src?: string | Blob; alt?: string }) {
+  return (
+    <figure>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={typeof src === "string" ? src : undefined} alt={alt ?? ""} loading="lazy" />
+      {alt && <figcaption className="mt-2 text-center text-sm text-muted-foreground">{alt}</figcaption>}
+    </figure>
+  );
+}
 
 function flattenToText(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -87,13 +97,19 @@ export function ArticleContent({ content, numbered = false }: { content: string;
               </a>
             );
           },
-          img: ({ src, alt }) => (
-            <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={alt ?? ""} loading="lazy" />
-              {alt && <figcaption className="mt-2 text-center text-sm text-muted-foreground">{alt}</figcaption>}
-            </figure>
-          ),
+          // react-markdown wraps a standalone image in a <p>, but the image
+          // itself renders as a <figure>/<figcaption> (block elements) —
+          // nesting those inside a <p> is invalid HTML and causes a
+          // hydration mismatch. Detect that case in the `p` renderer and
+          // unwrap to the <figure> directly instead of wrapping it in a <p>.
+          p: ({ children }) => {
+            const only = Array.isArray(children) && children.length === 1 ? children[0] : children;
+            if (isValidElement(only) && only.type === ArticleImage) {
+              return only;
+            }
+            return <p>{children}</p>;
+          },
+          img: ArticleImage,
         }}
       >
         {content}
