@@ -16,6 +16,7 @@ const LAST_TRACK_STORAGE_KEY = "lastPlayedTrack";
 // instead of leaving it blank/hidden, without asserting a fake "playing" state.
 const DEFAULT_TRACK: CurrentTrack = {
   isPlaying: false,
+  discordOnline: false,
   title: "No recent activity",
   artist: "Play something on Spotify",
   album: "",
@@ -55,10 +56,6 @@ export function MusicPlayer() {
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
-    setTrack((prev) => prev ?? readStoredTrack());
-  }, []);
-
-  useEffect(() => {
     let cancelled = false;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -74,7 +71,16 @@ export function MusicPlayer() {
             storeTrack(data);
             return data;
           }
-          return prev ? { ...prev, isPlaying: false } : data;
+          if (data.discordOnline) {
+            // Discord is open but nothing is playing — show the last known
+            // track (from this session or a previous one) marked as no
+            // longer live.
+            const base = prev ?? readStoredTrack();
+            return base ? { ...base, isPlaying: false } : null;
+          }
+          // Discord is closed/unreachable — never surface stale Discord
+          // data; the card falls back to its own independent default.
+          return null;
         });
       } catch {
         // Network hiccup — keep the last known state and try again next tick.

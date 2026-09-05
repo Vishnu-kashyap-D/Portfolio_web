@@ -6,6 +6,10 @@
 
 export interface CurrentTrack {
   isPlaying: boolean;
+  // Whether Discord itself is reachable/online for this user right now —
+  // lets the client tell "Discord is open but paused" apart from "Discord
+  // is closed/unreachable", instead of treating both as the same thing.
+  discordOnline: boolean;
   title: string;
   artist: string;
   album: string;
@@ -16,6 +20,7 @@ export interface CurrentTrack {
 
 export const EMPTY_TRACK: CurrentTrack = {
   isPlaying: false,
+  discordOnline: false,
   title: "",
   artist: "",
   album: "",
@@ -35,6 +40,7 @@ interface LanyardSpotifyActivity {
 interface LanyardUserResponse {
   success?: boolean;
   data?: {
+    discord_status?: string;
     listening_to_spotify?: boolean;
     spotify?: LanyardSpotifyActivity | null;
   };
@@ -90,15 +96,18 @@ export async function getCurrentlyPlaying(): Promise<CurrentTrack> {
 
   const spotify = payload?.data?.spotify;
   const isPlaying = Boolean(payload?.data?.listening_to_spotify && spotify);
+  const discordOnline = payload?.data?.discord_status !== undefined
+    && payload.data.discord_status !== "offline";
 
   if (!isPlaying || !spotify) {
-    return EMPTY_TRACK;
+    return { ...EMPTY_TRACK, discordOnline };
   }
 
   const trackId = spotify.track_id ?? "";
 
   return {
     isPlaying: true,
+    discordOnline: true,
     title: spotify.song ?? "",
     artist: spotify.artist ?? "",
     album: spotify.album ?? "",
