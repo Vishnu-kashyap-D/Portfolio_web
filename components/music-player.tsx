@@ -123,7 +123,7 @@ export function MusicPlayer() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       className={cn(
-        "fixed z-40 flex items-center gap-3 rounded-2xl p-3",
+        "absolute z-40 flex items-center gap-3 rounded-2xl p-3",
         "border border-white/15 bg-background/70 backdrop-blur-xl backdrop-saturate-150",
         "shadow-lg shadow-black/10 dark:shadow-black/40",
         "transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-xl",

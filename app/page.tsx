@@ -114,6 +114,8 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          <MusicPlayer />
         </section>
 
         {/* Section 2: About & Achievements */}
@@ -186,7 +188,6 @@ export default function Home() {
 
       </main>
       <Footer />
-      <MusicPlayer />
     </div>
   );
 }
