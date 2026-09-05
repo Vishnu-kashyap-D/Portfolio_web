@@ -11,6 +11,19 @@ import type { CurrentTrack } from "@/lib/lanyard";
 const POLL_INTERVAL_MS = 25_000;
 const LAST_TRACK_STORAGE_KEY = "lastPlayedTrack";
 
+// Shown when Discord/Lanyard has never returned any track data at all (e.g.
+// Discord isn't running yet on first-ever visit) — keeps the card visible
+// instead of leaving it blank/hidden, without asserting a fake "playing" state.
+const DEFAULT_TRACK: CurrentTrack = {
+  isPlaying: false,
+  title: "No recent activity",
+  artist: "Play something on Spotify",
+  album: "",
+  albumArt: "",
+  spotifyUrl: "",
+  trackId: "",
+};
+
 // Lanyard has no "previously played" API — the last known track is
 // persisted client-side so the card can keep showing it (marked as no
 // longer live) across polls and page reloads instead of disappearing.
@@ -93,23 +106,28 @@ export function MusicPlayer() {
     };
   }, []);
 
-  // Nothing has ever come back from Lanyard yet (no current or previous
-  // track to fall back to) — the only case where the card stays hidden.
-  if (!track || (!track.title && !track.trackId)) return null;
+  // Always render — fall back to the default placeholder when Discord/Lanyard
+  // has never returned any track data (nothing to show as "previous" yet).
+  const display =
+    track && (track.title || track.trackId) ? track : DEFAULT_TRACK;
 
-  const subtitle = track.album ? `${track.artist} · ${track.album}` : track.artist;
-  const isLinkable = Boolean(track.spotifyUrl);
-  const statusLabel = track.isPlaying ? "Currently Playing" : "Last Played";
+  const subtitle = display.album ? `${display.artist} · ${display.album}` : display.artist;
+  const isLinkable = Boolean(display.spotifyUrl);
+  const statusLabel = display.isPlaying
+    ? "Currently Playing"
+    : display === DEFAULT_TRACK
+      ? "Spotify"
+      : "Last Played";
 
   // The whole card opens the track on Spotify when a real URL is available;
   // otherwise it's a plain, non-interactive status card (never a fake link).
   const Wrapper = isLinkable ? motion.a : motion.div;
   const wrapperProps = isLinkable
     ? {
-        href: track.spotifyUrl,
+        href: display.spotifyUrl,
         target: "_blank",
         rel: "noopener noreferrer",
-        "aria-label": `Open ${track.title} by ${track.artist} on Spotify`,
+        "aria-label": `Open ${display.title} by ${display.artist} on Spotify`,
       }
     : {
         role: "status",
@@ -133,10 +151,10 @@ export function MusicPlayer() {
       )}
     >
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
-        {track.albumArt && !artFailed ? (
+        {display.albumArt && !artFailed ? (
           <Image
-            src={track.albumArt}
-            alt={`${track.album || track.title} album art`}
+            src={display.albumArt}
+            alt={`${display.album || display.title} album art`}
             fill
             sizes="56px"
             className="object-cover"
@@ -155,23 +173,23 @@ export function MusicPlayer() {
             <span
               className={cn(
                 "absolute inline-flex h-full w-full rounded-full bg-primary/60",
-                track.isPlaying && !shouldReduceMotion && "animate-ping"
+                display.isPlaying && !shouldReduceMotion && "animate-ping"
               )}
             />
             <span
               className={cn(
                 "relative inline-flex h-1.5 w-1.5 rounded-full",
-                track.isPlaying ? "bg-primary" : "bg-muted-foreground/50"
+                display.isPlaying ? "bg-primary" : "bg-muted-foreground/50"
               )}
             />
           </span>
           {statusLabel}
         </div>
-        <p className="truncate text-sm font-semibold text-foreground" title={track.title}>
-          {track.title}
+        <p className="truncate text-sm font-semibold text-foreground" title={display.title}>
+          {display.title}
         </p>
         <p className="truncate text-xs text-muted-foreground" title={subtitle}>
-          {track.artist}
+          {display.artist}
         </p>
       </div>
 
